@@ -18,40 +18,8 @@
 </head>
 <body>
     
-    <!-- Auth Overlay (Login/Register) -->
-    <div id="auth-overlay" class="overlay active">
-        <div class="glass-panel auth-panel">
-            <h2 id="auth-title">Xush kelibsiz</h2>
-            <p class="subtitle" id="auth-subtitle">Python o'rganishni davom ettirish uchun kiring</p>
-            
-            <form id="auth-form">
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="username" placeholder="Foydalanuvchi nomi" required>
-                </div>
-                
-                <div class="input-group register-fields" style="display: none;">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="email" placeholder="Email (ixtiyoriy)">
-                </div>
-                
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="password" placeholder="Parol" required>
-                </div>
-                
-                <button type="submit" class="btn-primary" id="auth-btn">O'rganishni boshlash</button>
-            </form>
-            <p class="toggle-auth">
-                <span id="auth-footer-text">Akkauntingiz yo'qmi?</span> 
-                <a href="#" id="toggle-auth-mode">Ro'yxatdan o'tish</a>
-            </p>
-            <div id="auth-error" class="error-msg"></div>
-        </div>
-    </div>
-
     <!-- Main App Container -->
-    <div id="app-container" class="app-container hidden">
+    <div id="app-container" class="app-container">
         <!-- Sidebar Navigation -->
         <nav class="sidebar glass-panel">
             <div class="logo">
@@ -68,8 +36,7 @@
             <div class="user-profile">
                 <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
                 <div class="user-info">
-                    <span id="nav-username">Talaba</span>
-                    <a href="#" id="logout-btn">Chiqish <i class="fa-solid fa-right-from-bracket"></i></a>
+                    <span id="nav-username">Mehmon O'quvchi</span>
                 </div>
             </div>
 

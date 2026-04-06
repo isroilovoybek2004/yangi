@@ -6,26 +6,14 @@ const app = {
     init() {
         this.cacheDOM();
         this.bindEvents();
-        this.checkAuth();
+        this.showApp();
     },
 
     cacheDOM() {
-        this.authOverlay = document.getElementById('auth-overlay');
-        this.appContainer = document.getElementById('app-container');
-        this.authForm = document.getElementById('auth-form');
-        this.authTitle = document.getElementById('auth-title');
-        this.authSubtitle = document.getElementById('auth-subtitle');
-        this.authBtn = document.getElementById('auth-btn');
-        this.toggleAuthBtn = document.getElementById('toggle-auth-mode');
-        this.authFooterText = document.getElementById('auth-footer-text');
-        this.registerFields = document.querySelector('.register-fields');
-        this.authError = document.getElementById('auth-error');
-        
         // Navigation
         this.navLinks = document.querySelectorAll('.nav-links li');
         this.views = document.querySelectorAll('.view');
         this.pageTitle = document.getElementById('page-title');
-        this.logoutBtn = document.getElementById('logout-btn');
         this.navUsername = document.getElementById('nav-username');
 
         // Courses & Tasks
@@ -86,13 +74,6 @@ const app = {
     },
 
     bindEvents() {
-        this.toggleAuthBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.toggleAuthMode();
-        });
-
-        this.authForm.addEventListener('submit', (e) => this.handleAuth(e));
-        this.logoutBtn.addEventListener('click', (e) => this.logout(e));
 
         this.navLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -136,91 +117,13 @@ const app = {
         }
     },
 
-    checkAuth() {
-        if (api.getToken()) {
-            this.showApp();
-        } else {
-            this.showAuth();
-        }
-    },
-
-    showAuth() {
-        this.authOverlay.classList.remove('hidden');
-        this.appContainer.classList.add('hidden');
-    },
-
     showApp() {
-        this.authOverlay.classList.add('hidden');
-        this.appContainer.classList.remove('hidden');
         this.loadDashboard();
     },
 
-    // 401 bo'lganda logout qilish va login sahifasini ko'rsatish
+    // 401 bo'lganda
     handleUnauth() {
-        api.clearTokens();
-        this.showAuth();
-        this.authError.innerText = "Seans muddati tugadi. Iltimos, qaytadan kiring.";
-    },
-
-    toggleAuthMode() {
-        this.isLoginMode = !this.isLoginMode;
-        this.authError.innerText = '';
-        if (this.isLoginMode) {
-            this.authTitle.innerText = "Xush kelibsiz";
-            this.authSubtitle.innerText = "O'rganishni davom ettirish uchun kiring";
-            this.authBtn.innerText = "O'rganishni boshlash";
-            this.authFooterText.innerText = "Akkauntingiz yo'qmi?";
-            this.toggleAuthBtn.innerText = "Ro'yxatdan o'tish";
-            this.registerFields.style.display = 'none';
-        } else {
-            this.authTitle.innerText = "Hisob yaratish";
-            this.authSubtitle.innerText = "Platformaga qo'shiling va Pythonni o'rganing";
-            this.authBtn.innerText = "Ro'yxatdan o'tish";
-            this.authFooterText.innerText = "Akkauntingiz bormi?";
-            this.toggleAuthBtn.innerText = "Kirish";
-            this.registerFields.style.display = 'block';
-        }
-    },
-
-    async handleAuth(e) {
-        e.preventDefault();
-        this.authError.innerText = '';
-        this.authBtn.disabled = true;
-        this.authBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kutilmoqda...';
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value;
-        
-        try {
-            if (this.isLoginMode) {
-                await api.login(username, password);
-                localStorage.setItem('username', username);
-                this.navUsername.innerText = username;
-                this.showApp();
-            } else {
-                const email = document.getElementById('email').value;
-                await api.register(username, email, password);
-                // Avtomatik login
-                await api.login(username, password);
-                localStorage.setItem('username', username);
-                this.navUsername.innerText = username;
-                this.showApp();
-            }
-            usernameInput.value = '';
-            passwordInput.value = '';
-        } catch (err) {
-            this.authError.innerText = err.message || "Avtorizatsiyadan o'tishda xato yuz berdi.";
-        } finally {
-            this.authBtn.disabled = false;
-            this.authBtn.innerHTML = this.isLoginMode ? "O'rganishni boshlash" : "Ro'yxatdan o'tish";
-        }
-    },
-
-    logout(e) {
-        e.preventDefault();
-        api.clearTokens();
-        this.showAuth();
+        console.error("Autentifikatsiya xatosi - Demo serverini tekshiring.");
     },
 
     switchView(viewName) {

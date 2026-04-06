@@ -3,55 +3,17 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
     : '/api';
 
 const api = {
-    getToken: () => localStorage.getItem('access_token'),
-    setTokens: (access, refresh) => {
-        localStorage.setItem('access_token', access);
-        if (refresh) localStorage.setItem('refresh_token', refresh);
-    },
-    clearTokens: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-    },
-
-    // Auth
-    async login(username, password) {
-        const res = await fetch(`${API_BASE}/token/`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, password})
-        });
-        if (!res.ok) throw new Error('Invalid credentials');
-        const data = await res.json();
-        this.setTokens(data.access, data.refresh);
-        return data;
-    },
-
-    async register(username, email, password) {
-        const res = await fetch(`${API_BASE}/users/register/`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, email, password})
-        });
-        if (!res.ok) throw new Error('Registration failed');
-        return await res.json();
-    },
-
-    // Protected Request Wrapper
+    // Request Wrapper (No longer requires token for Demo)
     async fetchProtected(endpoint, options = {}) {
-        let token = this.getToken();
-        if (!token) throw new Error('401: Token yo\'q');
-
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
             ...options.headers
         };
 
         let res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
         
         if (res.status === 401) {
-            this.clearTokens();
-            throw new Error('401: Seans muddati tugadi. Iltimos, qaytadan kiring.');
+            throw new Error('401: Backend himoyani qabul qilmadi.');
         }
         return res;
     },
