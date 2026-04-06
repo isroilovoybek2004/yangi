@@ -1,0 +1,23 @@
+# Venv and Cache
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local Database
+db.sqlite3
+*.sqlite3
+
+# Environment Variables
+.env
+
+# MacOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Local media uploads
+media/

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Learning Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    
+    <!-- Auth Overlay (Login/Register) -->
+    <div id="auth-overlay" class="overlay active">
+        <div class="glass-panel auth-panel">
+            <h2 id="auth-title">Xush kelibsiz</h2>
+            <p class="subtitle" id="auth-subtitle">Python o'rganishni davom ettirish uchun kiring</p>
+            
+            <form id="auth-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" placeholder="Foydalanuvchi nomi" required>
+                </div>
+                
+                <div class="input-group register-fields" style="display: none;">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Email (ixtiyoriy)">
+                </div>
+                
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Parol" required>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="auth-btn">O'rganishni boshlash</button>
+            </form>
+            <p class="toggle-auth">
+                <span id="auth-footer-text">Akkauntingiz yo'qmi?</span> 
+                <a href="#" id="toggle-auth-mode">Ro'yxatdan o'tish</a>
+            </p>
+            <div id="auth-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar glass-panel">
+            <div class="logo">
+                <i class="fa-brands fa-python"></i>
+                <span>PyLearn</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-view="dashboard"><i class="fa-solid fa-house"></i> Bosh sahifa</li>
+                <li data-view="courses"><i class="fa-solid fa-book-open"></i> Kurslar</li>
+                <li data-view="progress"><i class="fa-solid fa-chart-line"></i> Mening vazifalarim</li>
+                <li data-view="leaderboard"><i class="fa-solid fa-trophy"></i> Reyting</li>
+                <li data-view="stats"><i class="fa-solid fa-chart-pie"></i> Statistika</li>
+            </ul>
+            <div class="user-profile">
+                <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                <div class="user-info">
+                    <span id="nav-username">Talaba</span>
+                    <a href="#" id="logout-btn">Chiqish <i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </div>
+
+            <!-- Theme Picker Button -->
+            <button class="theme-picker-btn" id="theme-picker-btn">
+                <i class="fa-solid fa-palette"></i> Fonni o'zgartirish
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h1 id="page-title">Bosh sahifa</h1>
+            </header>
+
+            <!-- Dynamic Views -->
+            <div id="views-container">
+                <!-- Dashboard View -->
+                <section id="view-dashboard" class="view active">
+                    <div class="dashboard-cards">
+                        <div class="stat-card glass-panel" title="Joriy darajangiz">
+                            <div class="stat-icon" style="background: var(--secondary-glow);"><i class="fa-solid fa-award"></i></div>
+                            <div class="stat-info">
+                                <h3 id="dash-level-name">Yangi boshlovchi</h3>
+                                <p id="dash-level">1-daraja</p>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel">
+                            <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+                            <div class="stat-info">
+                                <h3>Umumiy ballar</h3>
+                                <p id="dash-points">0 XP</p>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel" title="Ketma-ket faollik kunlari">
+                            <div class="stat-icon" style="background: rgba(255, 69, 0, 0.2);"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="stat-info">
+                                <h3>Faollik</h3>
+                                <p id="dash-streak">0 Kun</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-secondary-grid">
+                        <div class="glass-panel welcome-card">
+                            <h3>Keyingi sinovga tayyormisiz?</h3>
+                            <p>O'rganishni davom ettirish uchun Kurslar bo'limiga o'ting.</p>
+                            <button class="btn-primary" onclick="app.switchView('courses')">Kurslarni ko'rish</button>
+                        </div>
+                        
+                        <div class="glass-panel badges-preview">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-medal"></i> So'nggi yutuqlar</h3>
+                                <button class="btn-text" onclick="app.switchView('stats')">Hammasini ko'rish</button>
+                            </div>
+                            <div id="dash-badges" class="badges-row">
+                                <p class="empty-msg">Hozircha yutuqlar yo'q.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Courses View -->
+                <section id="view-courses" class="view">
+                    <div id="courses-list" class="grid-container">
+                        <!-- Course items injected by JS -->
+                    </div>
+                </section>
+
+                <!-- Lesson / Editor View -->
+                <section id="view-editor" class="view">
+                    <button class="btn-back" onclick="app.switchView('courses')"><i class="fa-solid fa-arrow-left"></i> Kurslarga qaytish</button>
+                    <div class="editor-layout">
+                        <!-- Lesson Content -->
+                        <div class="lesson-panel glass-panel">
+                            <h2 id="lesson-title">Dars yuklanmoqda...</h2>
+                            <div id="lesson-content" class="content-text"></div>
+                            
+                            <div class="task-section">
+                                <!-- Ko'p topshiriqlar uchun tablar (tugmalar) -->
+                                <div id="task-tabs" class="task-tabs-container"></div>
+
+                                <h3><i class="fa-solid fa-code"></i> Topshiriq: <span id="task-title">...</span></h3>
+                                <p id="task-question" class="question-text"></p>
+                                <button class="btn-ai-toggle" id="btn-toggle-hints">
+                                    <i class="fa-solid fa-robot"></i> AI yordamini ko'rsatish
+                                </button>
+                                <div id="ai-hints" class="hints-box hidden">
+                                    <i class="fa-solid fa-robot"></i> <strong>AI Yordami:</strong> <span id="hint-text"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Code Editor Area -->
+                        <div class="coding-panel glass-panel">
+                            <div class="editor-header">
+                                <span><i class="fa-brands fa-python"></i> main.py</span>
+                                <div class="editor-header-right">
+                                    <button class="btn-ai-panel-toggle" id="btn-toggle-ai-panel" title="AI asboblari">
+                                        <i class="fa-solid fa-robot"></i> AI
+                                    </button>
+                                    <button id="submit-code-btn" class="btn-primary btn-sm"><i class="fa-solid fa-play"></i> Yuborish</button>
+                                </div>
+                            </div>
+                            <div class="ai-toolbar hidden" id="ai-toolbar">
+                                <button id="btn-explain" class="btn-ai" title="Kodni tushuntirib bering"><i class="fa-solid fa-wand-magic-sparkles"></i> Tushuntir</button>
+                                <button id="btn-hint" class="btn-ai" title="Yordam so'rash"><i class="fa-solid fa-lightbulb"></i> Yordam</button>
+                                <button id="btn-analyze" class="btn-ai" title="Xatoni tahlil qilish"><i class="fa-solid fa-bug"></i> Xatoni tahlil qil</button>
+                            </div>
+                            <!-- CodeMirror Editor -->
+                            <div id="code-editor-wrapper">
+                                <textarea id="code-editor" spellcheck="false"></textarea>
+                            </div>
+                            <div class="terminal-output" id="submission-result">
+                                Natijani kutilmoqda...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Progress View -->
+                <section id="view-progress" class="view">
+                    <div class="glass-panel">
+                        <h2>Vazifalar tarixi</h2>
+                        <div class="table-responsive">
+                            <table class="progress-table">
+                                <thead>
+                                    <tr>
+                                        <th>Topshiriq</th>
+                                        <th>Holat</th>
+                                        <th>Ball</th>
+                                        <th>AI Fikr-mulohazasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="progress-tbody">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Leaderboard View -->
+                <section id="view-leaderboard" class="view">
+                    <div class="glass-panel">
+                        <div class="view-header">
+                            <h2><i class="fa-solid fa-trophy" style="color: gold;"></i> Global reyting</h2>
+                            <p class="subtitle">Boshqa talabalar orasidagi o'rningizni ko'ring.</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="progress-table leaderboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>O'rin</th>
+                                        <th>Foydalanuvchi</th>
+                                        <th>Daraja</th>
+                                        <th>Tajriba (XP)</th>
+                                        <th>Yutuqlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leaderboard-tbody">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistics View -->
+                <section id="view-stats" class="view">
+                    <div class="stats-container">
+                        <div class="glass-panel stats-main">
+                            <h2><i class="fa-solid fa-chart-simple"></i> Batafsil statistika</h2>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="label">Aniqlik ko'rsatkichi</span>
+                                    <span class="value" id="stat-accuracy">0%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="label">Umumiy urinishlar</span>
+                                    <span class="value" id="stat-total-sub">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="label">Muvaffaqiyatli topshiriqlar</span>
+                                    <span class="value" id="stat-correct-sub">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="label">Tugatilgan darslar</span>
+                                    <span class="value" id="stat-finished-tasks">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel badges-full-list">
+                            <h3><i class="fa-solid fa-medal"></i> Mening yutuqlarim</h3>
+                            <div id="stats-badges-list" class="badges-grid-full">
+                                <!-- Yutuqlar shu yerga chiqadi -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Theme Selection Modal -->
+    <div class="theme-modal-overlay" id="theme-modal">
+        <div class="theme-modal">
+            <h3><i class="fa-solid fa-palette"></i> Fon tanlash</h3>
+            <p class="modal-subtitle">O'zingizga yoqqan fon rangini tanlang</p>
+            <div class="theme-grid">
+                <button class="theme-option active" data-theme-value="default">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #0b0f19, #141c2b);"></div>
+                    <span>Standart</span>
+                </button>
+                <button class="theme-option" data-theme-value="ocean">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #0a192f, #112240);"></div>
+                    <span>Okean</span>
+                </button>
+                <button class="theme-option" data-theme-value="forest">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #0a1a0f, #112e16);"></div>
+                    <span>O'rmon</span>
+                </button>
+                <button class="theme-option" data-theme-value="sunset">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #1a0a0f, #2d1220);"></div>
+                    <span>Quyosh</span>
+                </button>
+                <button class="theme-option" data-theme-value="cosmic">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #0f0a1a, #1a0d2e);"></div>
+                    <span>Koinot</span>
+                </button>
+                <button class="theme-option" data-theme-value="minimal">
+                    <div class="theme-preview" style="background: #111318;"></div>
+                    <span>Minimal</span>
+                </button>
+                <button class="theme-option" data-theme-value="black">
+                    <div class="theme-preview" style="background: #000000; border: 1px solid rgba(255,255,255,0.15);"></div>
+                    <span>⬛ Qora</span>
+                </button>
+                <button class="theme-option" data-theme-value="light">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #f0f2f5, #e8ecf1);"></div>
+                    <span>⬜ Oq</span>
+                </button>
+            </div>
+            <button class="theme-modal-close" id="theme-modal-close">Yopish</button>
+        </div>
+    </div>
+
+    <!-- CodeMirror Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/comment/comment.min.js"></script>
+    <!-- App Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
