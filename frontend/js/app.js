@@ -62,7 +62,7 @@ const app = {
         this.dashLevelName = document.getElementById('dash-level-name');
         this.dashPoints = document.getElementById('dash-points');
         this.dashStreak = document.getElementById('dash-streak');
-        this.dashBadges = document.getElementById('dash-badges');
+        this.dashBadges = document.getElementById('dash-badges'); // Endi ishlatilmaydi, lekin saqlab turamiz xato bermasligi uchun
         this.leaderboardTbody = document.getElementById('leaderboard-tbody');
         
         // Stats Elements
@@ -118,15 +118,93 @@ const app = {
     },
 
     showApp() {
-        this.loadDashboard();
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            this.switchView('auth');
+        } else {
+            this.switchView('dashboard');
+        }
     },
 
     // 401 bo'lganda
     handleUnauth() {
-        console.error("Autentifikatsiya xatosi - Demo serverini tekshiring.");
+        this.switchView('auth');
+    },
+
+    toggleAuthMode() {
+        this.isLoginMode = !this.isLoginMode;
+        document.getElementById('auth-title').innerText = this.isLoginMode ? 'Tizimga kirish' : "Ro'yxatdan o'tish";
+        document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "Darslarni davom ettirish uchun akkauntingizga kiring" : "Yangi platformaga xush kelibsiz";
+        document.getElementById('auth-submit-btn').innerText = this.isLoginMode ? 'Kirish' : "Ro'yxatdan o'tish";
+        document.getElementById('auth-toggle-text').innerText = this.isLoginMode ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?";
+        document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish" : 'Kirish';
+        document.getElementById('group-email').style.display = this.isLoginMode ? 'none' : 'block';
+        document.getElementById('auth-error').style.display = 'none';
+    },
+
+    async handleAuthSubmit() {
+        const username = document.getElementById('auth-username').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+        const email = document.getElementById('auth-email').value.trim();
+        const errorDiv = document.getElementById('auth-error');
+        const btn = document.getElementById('auth-submit-btn');
+
+        if (!username || !password) {
+            errorDiv.innerText = "Maydonlarni to'ldiring";
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        try {
+            btn.disabled = true;
+            btn.innerText = "Kutib turing...";
+            if (this.isLoginMode) {
+                await api.login(username, password);
+            } else {
+                if (!email) throw new Error("Email manzilni kiriting");
+                await api.register({ username, password, email });
+                await api.login(username, password); // Auto login
+            }
+            
+            // Success
+            errorDiv.style.display = 'none';
+            document.getElementById('auth-username').value = '';
+            document.getElementById('auth-password').value = '';
+            document.getElementById('auth-email').value = '';
+            
+            this.showApp();
+        } catch (err) {
+            errorDiv.innerText = err.message;
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = this.isLoginMode ? "Kirish" : "Ro'yxatdan o'tish";
+        }
+    },
+
+    handleLogout() {
+        api.logout();
+        this.showApp();
     },
 
     switchView(viewName) {
+        // Navbarni berkitish yoki ko'rsatish
+        const navLinksElem = document.querySelector('.nav-links');
+        const userProfile = document.querySelector('.user-profile');
+        if (viewName === 'auth') {
+            if (navLinksElem) navLinksElem.style.display = 'none';
+            if (userProfile) userProfile.style.display = 'none';
+        } else {
+            if (navLinksElem) navLinksElem.style.display = 'flex';
+            if (userProfile) userProfile.style.display = 'flex';
+            
+            // Username yangilash
+            const savedUser = localStorage.getItem('username');
+            if (savedUser && this.navUsername) {
+                this.navUsername.innerText = savedUser;
+            }
+        }
+
         this.navLinks.forEach(l => l.classList.remove('active'));
         const navItem = document.querySelector(`.nav-links li[data-view="${viewName}"]`);
         if (navItem) navItem.classList.add('active');
@@ -146,7 +224,7 @@ const app = {
             // Set Titles
             const titles = {
                 'dashboard': 'Bosh sahifa',
-                'courses': 'Mavjud kurslar',
+                'courses': 'Mavjud mavzular',
                 'progress': 'Mening vazifalarim',
                 'editor': 'Ish maydoni',
                 'leaderboard': 'Global reyting',
@@ -169,34 +247,238 @@ const app = {
 
     async loadDashboard() {
         try {
-            const profile = await api.getGamificationProfile();
+            const [profile, stats] = await Promise.all([
+                api.getGamificationProfile(),
+                api.getStats()
+            ]);
+            
             this.dashPoints.innerText = `${profile.xp} XP`;
             this.dashLevel.innerText = `${profile.level}-daraja`;
             this.dashLevelName.innerText = profile.level_name;
-            this.dashStreak.innerText = `${profile.streak_days} Kun`;
+            this.dashStreak.innerText = `${profile.streak_days} kun`;
 
             // Sidebar username
             const savedUser = localStorage.getItem('username');
             if (savedUser) this.navUsername.innerText = savedUser;
 
-            // Display badges (first 4)
-            this.dashBadges.innerHTML = '';
-            if (profile.badges && profile.badges.length > 0) {
-                profile.badges.slice(0, 4).forEach(ub => {
-                    const badge = ub.badge;
-                    const div = document.createElement('div');
-                    div.className = 'badge-item';
-                    div.title = badge.name + ': ' + badge.description;
-                    div.innerText = badge.icon;
-                    this.dashBadges.appendChild(div);
-                });
-            } else {
-                this.dashBadges.innerHTML = '<p class="empty-msg">Hozircha yutuqlar yo\'q.</p>';
-            }
+            // Render Charts
+            this.renderActivityHeatmap(stats.activity_data);
+            this.renderCourseMasteryChart(stats.courses_progress);
         } catch (e) {
             if (e.message && e.message.includes('401')) return this.handleUnauth();
             console.error("Dashboard ma'lumotlarini yuklashda xato:", e);
         }
+    },
+
+    _heatmapAllData: null,
+    _heatmapYear: null,
+
+    renderActivityHeatmap(activityData) {
+        // Store full data for year switching
+        if (activityData !== undefined) {
+            this._heatmapAllData = activityData;
+        }
+        const allData = this._heatmapAllData || [];
+
+        // --- Year selector ---
+        const yearSelector = document.getElementById('heatmap-year-selector');
+        const currentYear = new Date().getFullYear();
+        // Find which years have data
+        const yearsWithData = [...new Set(allData.map(d => parseInt(d.date.substring(0, 4))))];
+        // Always show at least current and previous year
+        const allYears = [...new Set([currentYear - 1, currentYear, ...yearsWithData])].sort();
+        
+        if (!this._heatmapYear) this._heatmapYear = currentYear;
+
+        if (yearSelector && yearSelector.childElementCount !== allYears.length) {
+            yearSelector.innerHTML = '';
+            allYears.forEach(y => {
+                const btn = document.createElement('button');
+                btn.className = `year-btn${y === this._heatmapYear ? ' active' : ''}`;
+                btn.textContent = y;
+                btn.onclick = () => {
+                    this._heatmapYear = y;
+                    this.renderActivityHeatmap(undefined);
+                };
+                yearSelector.appendChild(btn);
+            });
+        } else if (yearSelector) {
+            yearSelector.querySelectorAll('.year-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.textContent) === this._heatmapYear);
+            });
+        }
+
+        const selectedYear = this._heatmapYear;
+
+        const container = document.getElementById('activity-heatmap');
+        const monthsContainer = document.getElementById('activity-months');
+        if (!container) return;
+
+        const CELL = 11;
+        const GAP  = 3;
+        const STEP = CELL + GAP; // 14px per column
+
+        // Build activity map for selected year
+        const activityMap = {};
+        allData.forEach(item => {
+            if (item.date.startsWith(String(selectedYear))) {
+                activityMap[item.date] = item.count;
+            }
+        });
+
+        // Build 52 weeks for the selected year
+        const startDate = new Date(selectedYear, 0, 1); // Jan 1
+        const endDate   = selectedYear === currentYear
+            ? new Date() // today
+            : new Date(selectedYear, 11, 31); // Dec 31
+
+        // Roll back to Monday of the week containing Jan 1
+        const startDow = startDate.getDay(); // 0=Sun
+        const adjustedStart = new Date(startDate);
+        adjustedStart.setDate(startDate.getDate() - (startDow === 0 ? 6 : startDow - 1));
+
+        // Build weeks
+        const weeks = [];
+        let week = [];
+        const cursor = new Date(adjustedStart);
+        while (cursor <= endDate || week.length > 0) {
+            const dateStr = cursor.toISOString().split('T')[0];
+            const inYear  = cursor.getFullYear() === selectedYear;
+            const count   = inYear ? (activityMap[dateStr] || 0) : -1; // -1 = outside year
+            week.push({ date: dateStr, count, month: cursor.getMonth(), year: cursor.getFullYear(), inYear });
+            cursor.setDate(cursor.getDate() + 1);
+            if (week.length === 7) { weeks.push(week); week = []; }
+            if (cursor > endDate && week.length === 0) break;
+        }
+        if (week.length > 0) {
+            while (week.length < 7) {
+                week.push({ date: '', count: -1, month: -1, year: -1, inYear: false });
+            }
+            weeks.push(week);
+        }
+
+        // Render month labels
+        if (monthsContainer) {
+            monthsContainer.innerHTML = '';
+            monthsContainer.style.cssText = 'position:relative; height:18px; font-size:0.7rem; color:var(--text-muted); margin-bottom:3px;';
+            const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            let lastLabel = -1;
+            let lastLabelWeek = -5;
+            weeks.forEach((w, wi) => {
+                const firstInYear = w.find(d => d.inYear);
+                if (!firstInYear) return;
+                if (firstInYear.month !== lastLabel && (wi - lastLabelWeek) >= 3) {
+                    const label = document.createElement('span');
+                    label.style.cssText = `position:absolute; left:${wi * STEP}px; white-space:nowrap;`;
+                    label.textContent = monthNames[firstInYear.month];
+                    monthsContainer.appendChild(label);
+                    lastLabel = firstInYear.month;
+                    lastLabelWeek = wi;
+                }
+            });
+        }
+
+        // Render heatmap grid
+        container.innerHTML = '';
+        container.style.cssText = `display:grid; grid-template-rows:repeat(7,${CELL}px); grid-auto-columns:${CELL}px; grid-auto-flow:column; gap:${GAP}px; justify-content:start;`;
+
+        // Detect light theme for correct gray/yellow colors
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const COLORS = {
+            0: isLight ? '#ebedf0' : '#21262d',         // GRAY — no activity
+            1: isLight ? '#fffacd' : 'rgba(255,212,59,0.25)', // very light yellow
+            2: isLight ? '#fde272' : 'rgba(255,212,59,0.5)',
+            3: isLight ? '#fcc419' : 'rgba(255,212,59,0.78)',
+            4: isLight ? '#c9a900' : '#FFD43B',          // full yellow
+        };
+
+        weeks.forEach(w => {
+            w.forEach(day => {
+                const box = document.createElement('div');
+                box.style.cssText = `width:${CELL}px; height:${CELL}px; border-radius:2px; cursor:pointer; transition:transform 0.15s;`;
+                if (!day.inYear || day.count < 0) {
+                    box.style.visibility = 'hidden';
+                } else {
+                    let level = 0;
+                    if (day.count >= 1) level = 1;
+                    if (day.count >= 3) level = 2;
+                    if (day.count >= 5) level = 3;
+                    if (day.count >= 7) level = 4;
+                    box.style.backgroundColor = COLORS[level];
+                    box.title = `${day.date}: ${day.count} ta kirish`;
+                    box.onmouseenter = () => box.style.transform = 'scale(1.3)';
+                    box.onmouseleave = () => box.style.transform = 'scale(1)';
+                }
+                container.appendChild(box);
+
+            });
+        });
+    },
+
+    renderCourseMasteryChart(coursesProgress) {
+        const ctx = document.getElementById('mastery-chart');
+        if (!ctx) return;
+        
+        if (this.masteryChart) {
+            this.masteryChart.destroy();
+        }
+
+        if (!coursesProgress || coursesProgress.length === 0) {
+            const container = ctx.parentNode;
+            container.innerHTML = '<p class="empty-msg" style="text-align:center; padding-top:100px; color:var(--text-muted);">Hozircha tizimga mavzular kiritilmagan.</p>';
+            return;
+        }
+
+        const labels = coursesProgress.map(c => c.course_name);
+        const data = coursesProgress.map(c => c.percentage);
+        
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const textColor = isLight ? '#1a1a2e' : '#f8fafc';
+        const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+
+        this.masteryChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "O'zlashtirish foizi (%)",
+                    data: data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // horizontal bar chart
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: isLight ? 'rgba(255,255,255,0.95)' : 'rgba(15,23,42,0.95)',
+                        titleColor: isLight ? '#1a1a2e' : '#f8fafc',
+                        bodyColor: isLight ? '#1a1a2e' : '#f8fafc',
+                        borderColor: gridColor,
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, font: { family: 'Inter', size: 11 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { family: 'Inter', size: 12 } }
+                    }
+                }
+            }
+        });
     },
 
     async loadLeaderboard() {
@@ -267,48 +549,112 @@ const app = {
     },
 
     async loadCourses() {
-        this.coursesList.innerHTML = '<p>Kurslar yuklanmoqda...</p>';
+        this.coursesList.innerHTML = '<p>Yuklanmoqda...</p>';
         try {
-            const [courses, lessons] = await Promise.all([
+            const [courses, lessons, progress] = await Promise.all([
                 api.getCourses(),
-                api.getLessons()
+                api.getLessons(),
+                api.getProgress()
             ]);
-            
+
             this.coursesList.innerHTML = '';
 
             if (!courses || courses.length === 0) {
-                this.coursesList.innerHTML = '<p class="empty-msg">Hozircha kurslar mavjud emas. Admin panelidan kurs qo\'shing.</p>';
+                this.coursesList.innerHTML = '<p class="empty-msg">Hozircha mavzular mavjud emas.</p>';
                 return;
             }
 
+            // Build completed task set from progress
+            const completedTaskIds = new Set(
+                (progress || []).filter(p => p.is_completed).map(p => p.task)
+            );
+
             courses.forEach(c => {
                 const cLessons = lessons.filter(l => l.course === c.id);
-                
+
                 const card = document.createElement('div');
                 card.className = 'course-card glass-panel';
+                card.style.cssText = 'margin-bottom: 24px;';
+
+                // Header
                 card.innerHTML = `
-                    <div class="course-header">
-                        <div class="course-icon"><i class="fa-brands fa-python"></i></div>
-                        <span style="font-size: 0.8rem; color: var(--primary);">O'qituvchi: ${c.instructor_detail?.username || 'Admin'}</span>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                        <div class="course-icon">
+                            <img src="img/python-logo.svg" alt="Python" style="width:26px; height:26px; object-fit:contain;">
+                        </div>
+                        <div>
+                            <h3 style="margin:0; font-size:1.1rem;">${c.title}</h3>
+                            <p style="margin:2px 0 0; font-size:0.82rem; color:var(--text-muted);">${c.description || ''}</p>
+                        </div>
                     </div>
-                    <h3>${c.title}</h3>
-                    <p>${c.description}</p>
-                    <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 15px 0;">
-                    <div class="course-lessons">
-                        ${cLessons.length === 0 ? '<p style="font-size:0.8rem; color:var(--text-muted)">Hozircha darslar yo\'q</p>' : ''}
+                    <div class="lesson-table-wrapper">
+                        <table class="lesson-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;">Mavzu nomi</th>
+                                    <th style="text-align:center; width:130px;">Topshiriq</th>
+                                    <th style="text-align:center; width:100px;">Test</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lessons-body-${c.id}"></tbody>
+                        </table>
                     </div>
                 `;
-                
-                const lessonsContainer = card.querySelector('.course-lessons');
-                cLessons.forEach(l => {
-                    const lCard = document.createElement('div');
-                    lCard.className = 'lesson-card';
-                    lCard.innerHTML = `<i class="fa-solid fa-play" style="font-size: 0.7rem; margin-right: 8px;"></i> ${l.title}`;
-                    lCard.onclick = () => this.openLesson(l);
-                    lessonsContainer.appendChild(lCard);
-                });
-                
+
                 this.coursesList.appendChild(card);
+                const tbody = document.getElementById(`lessons-body-${c.id}`);
+
+                if (cLessons.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">Hozircha darslar yo'q</td></tr>`;
+                    return;
+                }
+
+                cLessons.forEach(l => {
+                    // tasks = kod topshiriqlari, quizzes = test savollari (alohida model)
+                    const tasks   = l.tasks   || [];
+                    const quizzes = l.quizzes || [];
+
+                    const taskTotal = tasks.length;
+                    const taskComp  = tasks.filter(t => completedTaskIds.has(t.id)).length;
+                    const taskDone  = taskTotal > 0 && taskComp === taskTotal;
+
+                    // Quiz uchun completion tracking: quiz.questions orqali
+                    // Hozircha quizTotal — quiz bloklar soni (har quiz = 1 test bloki)
+                    const quizTotal = quizzes.length;
+                    // Quiz savollarini progress bilan tekshirish (QuizQuestion idlari)
+                    const quizQIds  = quizzes.flatMap(q => (q.questions || []).map(qq => qq.id));
+                    const quizComp  = quizQIds.filter(id => completedTaskIds.has(id)).length;
+                    const quizDone  = quizTotal > 0 && quizQIds.length > 0 && quizComp === quizQIds.length;
+
+                    const taskBadge = taskTotal === 0
+                        ? `<span class="status-badge status-empty">Mavjud emas</span>`
+                        : taskDone
+                            ? `<span class="status-badge status-done"><i class="fa-solid fa-check"></i> Bajarildi</span>`
+                            : taskComp > 0
+                                ? `<span class="status-badge status-partial">${taskComp}/${taskTotal} bajarildi</span>`
+                                : `<span class="status-badge status-pending">Bajarilmagan</span>`;
+
+                    const quizBadge = quizTotal === 0
+                        ? `<span class="status-badge status-empty">Mavjud emas</span>`
+                        : quizDone
+                            ? `<span class="status-badge status-done"><i class="fa-solid fa-check"></i> Bajarildi</span>`
+                            : quizComp > 0
+                                ? `<span class="status-badge status-partial">${quizComp}/${quizQIds.length} bajarildi</span>`
+                                : `<span class="status-badge status-pending">Bajarilmagan</span>`;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'lesson-row';
+                    tr.innerHTML = `
+                        <td class="lesson-name-cell">
+                            <i class="fa-solid fa-circle-play" style="color:var(--accent); margin-right:8px; font-size:0.85rem;"></i>
+                            ${l.title}
+                        </td>
+                        <td style="text-align:center;">${taskBadge}</td>
+                        <td style="text-align:center;">${quizBadge}</td>
+                    `;
+                    tr.onclick = () => this.openLesson(l);
+                    tbody.appendChild(tr);
+                });
             });
         } catch (e) {
             if (e.message && e.message.includes('401')) return this.handleUnauth();
@@ -319,7 +665,70 @@ const app = {
     async openLesson(lesson) {
         this.switchView('editor');
         this.lessonTitle.innerText = lesson.title;
-        this.lessonContent.innerHTML = lesson.content || "Mavzu bo'yicha ma'lumot yuklanmoqda...";
+
+        // --- YouTube video ---
+        let contentHtml = lesson.content || "Mavzu bo'yicha ma'lumot yuklanmoqda...";
+        let videoHtml = '';
+        if (lesson.video_url) {
+            // video_url ni embed URL ga aylantirish (watch?v= -> embed/)
+            let embedUrl = lesson.video_url;
+            const ytMatch = lesson.video_url.match(
+                /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_\-]{11})/
+            );
+            if (ytMatch) {
+                embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+            }
+
+            // Eski dars matnidagi YouTube iframe'larni va ularning bo'sh qolgan wrapperlarini o'chirib tashlaymiz
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = contentHtml;
+            const iframes = tempDiv.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]');
+            iframes.forEach(iframe => {
+                let parent = iframe.parentElement;
+                iframe.remove();
+                while (parent && parent !== tempDiv) {
+                    if (parent.innerHTML.trim() === '' || parent.innerHTML.trim() === '<br>') {
+                        let nextParent = parent.parentElement;
+                        parent.remove();
+                        parent = nextParent;
+                    } else {
+                        break;
+                    }
+                }
+            });
+
+            // Shuningdek, bazada qolib ketgan bo'sh video wrapperlarni ham tozalaymiz
+            const emptyWrappers = tempDiv.querySelectorAll('.video-wrapper, .lesson-video-wrapper');
+            emptyWrappers.forEach(wrapper => {
+                const textContent = wrapper.innerHTML.replace(/&nbsp;/g, '').trim();
+                if (textContent === '' || textContent === '<br>' || textContent === '<p></p>' || textContent === '<p><br></p>') {
+                    wrapper.remove();
+                }
+            });
+
+            contentHtml = tempDiv.innerHTML;
+
+            videoHtml = `
+                <div class="lesson-video-wrapper" style="
+                    position:relative; padding-bottom:56.25%; height:0; overflow:hidden;
+                    border-radius:12px; margin-bottom:20px; 
+                    background: rgba(255, 255, 255, 0.05);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border: 1px solid var(--border-glass);
+                    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+                ">
+                    <iframe
+                        src="${embedUrl}"
+                        title="Dars videosi"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen
+                        style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;"
+                    ></iframe>
+                </div>`;
+        }
+        this.lessonContent.innerHTML = videoHtml + contentHtml;
         // VS Code stilida kod bloklarni bo'yash
         syntaxHighlighter.highlight(this.lessonContent);
         
@@ -340,12 +749,121 @@ const app = {
                 if (taskTabs) taskTabs.appendChild(btn);
             });
             this.renderTask(lesson.tasks[0]);
+            // Task seksiyasiga scroll
+            setTimeout(() => {
+                const taskSection = document.querySelector('.task-section');
+                if (taskSection) {
+                    taskSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 300);
         } else {
             this.taskTitle.innerText = "Vazifalar yo'q";
             this.taskQuestion.innerText = "Ushbu dars uchun hozircha vazifalar mavjud emas.";
             this.currentTask = null;
             hintsBox.classList.add('hidden');
         }
+
+        const quizSection = document.getElementById('quiz-section');
+        const quizContainer = document.getElementById('quiz-container');
+        if (lesson.quizzes && lesson.quizzes.length > 0) {
+            if (quizSection) quizSection.style.display = 'block';
+            this.renderQuizzes(lesson.quizzes, quizContainer);
+        } else {
+            if (quizSection) quizSection.style.display = 'none';
+        }
+    },
+
+    renderQuizzes(quizzes, container) {
+        if (!container) return;
+        container.innerHTML = '';
+        
+        quizzes.forEach((quiz, qzIdx) => {
+            const quizDiv = document.createElement('div');
+            quizDiv.className = 'quiz-block';
+            quizDiv.innerHTML = `<h4 style="color:var(--primary); margin-bottom: 10px;">${quiz.title}</h4>`;
+            
+            if (quiz.questions && quiz.questions.length > 0) {
+                quiz.questions.forEach((q, i) => {
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'quiz-question';
+                    qDiv.style.marginBottom = '15px';
+                    
+                    let html = `<p><strong>${i+1}.</strong> ${q.question_text}</p>`;
+                    html += `<div class="quiz-choices" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">`;
+                    
+                    q.choices.forEach(c => {
+                        html += `
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 1px solid var(--border-glass);">
+                                <input type="radio" name="question_${q.id}" value="${c.is_correct}">
+                                <span>${c.choice_text}</span>
+                            </label>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                    html += `<p class="quiz-feedback hidden" id="feedback_${q.id}" style="margin-top: 8px; font-size: 0.85rem; padding: 8px; border-radius: 5px;"></p>`;
+                    
+                    qDiv.innerHTML = html;
+                    quizDiv.appendChild(qDiv);
+                });
+                
+                const btn = document.createElement('button');
+                btn.className = 'btn-primary btn-sm';
+                btn.style.marginTop = '15px';
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Javoblarni tekshirish';
+                btn.onclick = async () => {
+                    let score = 0;
+                    quiz.questions.forEach(q => {
+                        const selected = quizDiv.querySelector(`input[name="question_${q.id}"]:checked`);
+                        const feedbackEl = quizDiv.querySelector(`#feedback_${q.id}`);
+                        feedbackEl.classList.remove('hidden');
+                        
+                        if (!selected) {
+                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Javob belgilanmadi.`;
+                            feedbackEl.style.background = 'rgba(255,165,0,0.1)';
+                            feedbackEl.style.color = 'orange';
+                        } else if (selected.value === 'true') {
+                            score++;
+                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> To'g'ri! ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
+                            feedbackEl.style.background = 'rgba(74,222,128,0.1)';
+                            feedbackEl.style.color = '#4ade80';
+                        } else {
+                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Noto'g'ri. ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
+                            feedbackEl.style.background = 'rgba(248,113,113,0.1)';
+                            feedbackEl.style.color = '#f87171';
+                        }
+                    });
+                    
+                    if (score === quiz.questions.length && score > 0) {
+                        // XP berish API ga so'rov
+                        try {
+                            const xpRes = await api.quizXP();
+                            let msg = `🎉 Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!\n+${xpRes.xp_earned || 5} XP qo'shildi!`;
+                            if (xpRes.new_badges && xpRes.new_badges.length > 0) {
+                                msg += `\n🏅 Yangi yutuq: ${xpRes.new_badges.join(', ')}`;
+                            }
+                            alert(msg);
+                            this.loadDashboard();
+                        } catch(e) {
+                            alert(`Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!`);
+                        }
+                        // Tugmani o'chirish (qayta bosmasligi uchun)
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Yakunlandi';
+                    } else {
+                        alert(`Natija: ${quiz.questions.length} tadan ${score} tasi to'g'ri. Qayta urinib ko'ring!`);
+                    }
+                };
+                quizDiv.appendChild(btn);
+            } else {
+                quizDiv.innerHTML += '<p style="font-size:0.8rem; color:var(--text-muted)">Savollar tizimga kiritilmagan.</p>';
+            }
+            
+            container.appendChild(quizDiv);
+            if (qzIdx < quizzes.length - 1) {
+                container.appendChild(document.createElement('hr'));
+            }
+        });
     },
 
     renderTask(task) {
@@ -354,7 +872,9 @@ const app = {
         const hintsToggle = document.getElementById('btn-toggle-hints');
         this.taskTitle.innerText = task.title;
         this.taskQuestion.innerText = task.question;
-        this.cmEditor.setValue('');
+        // Boshlang'ich kodni editorga yuklash
+        const starterCode = task.starter_code || '';
+        this.cmEditor.setValue(starterCode);
         this.cmEditor.clearHistory();
         this.submissionResult.className = 'terminal-output';
         this.submissionResult.innerHTML = 'Kutilmoqda...';
@@ -372,6 +892,8 @@ const app = {
         } else {
             if (hintsToggle) hintsToggle.style.display = 'none';
         }
+        // CodeMirror ni to'g'ri o'lchamda ko'rsatish uchun refresh
+        setTimeout(() => this.cmEditor.refresh(), 50);
     },
 
 
@@ -392,10 +914,14 @@ const app = {
                 if (res.new_badges && res.new_badges.length > 0) {
                     badgeMsg = `<br><br><span style="color:#f59e0b"><i class="fa-solid fa-medal"></i> YANGI YUTUQ: ${res.new_badges.join(', ')}!</span>`;
                 }
-                this.submissionResult.innerHTML = `<span style="color:#4ade80">Muvaffaqiyatli! Kompilyatsiya muvaffaqiyatli o'tdi.</span><br><span style="color:var(--primary)">+${res.xp_earned} XP to'plandi</span>${badgeMsg}<br><br>Natija: <br>${res.ai_feedback || ""}`;
+                const feedbackHtml = (res.ai_feedback || '').replace(/\n/g, '<br>');
+                this.submissionResult.innerHTML = `<span style="color:#4ade80"><i class="fa-solid fa-circle-check"></i> Muvaffaqiyatli! Kod to'g'ri ishladi.</span><br><span style="color:var(--primary)">+${res.xp_earned} XP to'plandi</span>${badgeMsg}<br><br><strong>Natija:</strong><br><code style="font-family:monospace;white-space:pre-wrap">${feedbackHtml}</code>`;
+                // Dashboard ni yangilash
+                this.loadDashboard();
             } else {
                 this.submissionResult.className = 'terminal-output error';
-                this.submissionResult.innerHTML = `Xato.<br>Xatolik: ${res.ai_feedback || "Sintaktik xato."}`;
+                const errHtml = (res.ai_feedback || 'Sintaktik xato.').replace(/\n/g, '<br>');
+                this.submissionResult.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Xato.<br><br>${errHtml}`;
             }
         } catch(e) {
             this.submissionResult.className = 'terminal-output error';
@@ -406,26 +932,26 @@ const app = {
     async askAI(type) {
         if (!this.currentTask) return alert("Avval masalani tanlang.");
         const code = this.cmEditor.getValue();
-        
-        if (!code.trim() && type === 'explain') return alert("Tushuntirish uchun kod yozing.");
-        
-        let payload = { code: code, task_question: this.currentTask.question };
-        
-        if (type === 'analyze') {
-            const terminalText = this.submissionResult.innerText;
-            const hasErrorClass = this.submissionResult.classList.contains('error');
-            const lowerText = terminalText.toLowerCase();
-            const hasErrorText = lowerText.includes('xato') || lowerText.includes('error') || lowerText.includes('fail');
 
-            if (!terminalText || (!hasErrorClass && !hasErrorText)) {
+        if (type === 'explain') {
+            if (!code.trim()) return alert("Tushuntirish uchun kod yozing.");
+        }
+
+        let payload = { code: code, task_question: this.currentTask.question };
+
+        if (type === 'analyze') {
+            const terminalText = this.submissionResult.innerText.trim();
+            // Terminal bo'sh yoki faqat "Kutilmoqda" matni bo'lsa bloklash
+            const isIdle = !terminalText || terminalText === 'Kutilmoqda...' || terminalText === 'Natijani kutilmoqda...';
+            if (isIdle) {
                 return alert("Tahlil qilish uchun avval kodni yuborib, xato chiqaring.");
             }
             payload.error_message = terminalText;
         }
-        
+
         this.submissionResult.className = 'terminal-output';
         this.submissionResult.innerHTML = `AI o'ylamoqda... <i class="fa-solid fa-spinner fa-spin"></i>`;
-        
+
         try {
             const res = await api.askAI(type, payload);
             // Format markdown-like newlines
@@ -616,4 +1142,11 @@ const syntaxHighlighter = {
 window.onload = () => {
     app.init();
     themePicker.init();
+    
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            alert("Siz hozir ochiq demo rejimidasiz. Tizim avtomatik ravishda mehmon akkauntiga ulangan, shuning uchun profildan chiqish hozircha o'chirib qo'yilgan.");
+        });
+    }
 };

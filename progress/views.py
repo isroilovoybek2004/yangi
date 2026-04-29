@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from progress.models import Progress, Submission
 from progress.serializers import ProgressSerializer, SubmissionSerializer
 from gamification.services import GamificationService
+from lessons.models import Task
 import subprocess
 import sys
 import re
@@ -54,13 +55,33 @@ class SubmissionViewSet(viewsets.ModelViewSet):
                     text=True,
                     timeout=3
                 )
-                
-                if result.returncode == 0:
-                    submission.is_correct = True
-                    submission.ai_feedback = f"{result.stdout}"
-                else:
+
+                if result.returncode != 0:
+                    # Sintaksis yoki runtime xatosi
                     submission.is_correct = False
-                    submission.ai_feedback = f"{result.stderr}"
+                    submission.ai_feedback = f"{result.stderr.strip()}"
+                else:
+                    # Kod ishladi — natijani expected_output bilan taqqoslaymiz
+                    actual_output = result.stdout.strip()
+                    try:
+                        task_obj = Task.objects.get(pk=submission.task_id)
+                        expected = task_obj.expected_output.strip()
+                    except Task.DoesNotExist:
+                        expected = ""
+
+                    if expected and actual_output == expected:
+                        submission.is_correct = True
+                        submission.ai_feedback = actual_output
+                    elif not expected:
+                        # expected_output bo'sh qoldirilgan bo'lsa — ishlashi yetarli
+                        submission.is_correct = True
+                        submission.ai_feedback = actual_output or "Kod muvaffaqiyatli bajarildi."
+                    else:
+                        submission.is_correct = False
+                        submission.ai_feedback = (
+                            f"Kutilgan natija:\n{expected}\n\n"
+                            f"Sizning natijangiz:\n{actual_output}"
+                        )
             except subprocess.TimeoutExpired:
                 submission.is_correct = False
                 submission.ai_feedback = "Time Limit Exceeded: Kod 3 soniyadan ortiq ishladi."
@@ -151,3 +172,32 @@ class AIAssistView(APIView):
             return Response({"error": user_msg}, status=503)
         except Exception as e:
             return Response({"error": f"Server xatoligi: {str(e)}"}, status=500)
+
+
+class QuizXPView(APIView):
+    """
+    Quiz to'g'ri yechilganda XP berish.
+    POST /api/progress/quiz-xp/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    XP_QUIZ_COMPLETE = 5  # Quiz uchun XP
+
+    def post(self, request):
+        try:
+            profile = GamificationService.award_xp(
+                user=request.user,
+                amount=self.XP_QUIZ_COMPLETE,
+                reason="Quiz muvaffaqiyatli yakunlandi"
+            )
+            new_badges = GamificationService.check_and_award_badges(request.user)
+            return Response({
+                "xp_earned": self.XP_QUIZ_COMPLETE,
+                "total_xp": profile.xp,
+                "level": profile.level,
+                "level_name": profile.level_name,
+                "new_badges": [b.name for b in new_badges],
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+

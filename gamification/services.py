@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import transaction
+from datetime import timedelta
 from gamification.models import UserProfile, Badge, UserBadge, calculate_level
 
 
@@ -122,6 +123,10 @@ class GamificationService:
         Dashboard va statistika sahifasida ishlatiladi.
         """
         from progress.models import Submission, Progress
+        from courses.models import Course
+        from lessons.models import Task
+        from django.db.models import Count
+        from django.db.models.functions import TruncDate
 
         profile        = cls.get_or_create_profile(user)
         total_sub      = Submission.objects.filter(user=user).count()
@@ -130,6 +135,38 @@ class GamificationService:
         success_rate   = round((correct_sub / total_sub * 100), 1) if total_sub > 0 else 0.0
         completed_tasks= Progress.objects.filter(user=user, is_completed=True).count()
         badges_count   = UserBadge.objects.filter(user=user).count()
+
+        # Activity Data — DailyLogin asosida (platformaga kirgan kunlar)
+        cutoff = timezone.now().date() - timedelta(days=366)
+        from gamification.models import DailyLogin
+        activity_data = list(
+            DailyLogin.objects.filter(user=user, date__gte=cutoff)
+            .values('date')
+            .annotate(count=Count('id'))
+            .order_by('date')
+        )
+        
+        for a in activity_data:
+            a['date'] = str(a['date'])
+
+        # Courses Progress
+        courses_progress = []
+        for course in Course.objects.all():
+            total_tasks = Task.objects.filter(lesson__course=course).count()
+            completed = Progress.objects.filter(
+                user=user,
+                task__lesson__course=course,
+                is_completed=True
+            ).count()
+            
+            percentage = round((completed / total_tasks * 100), 1) if total_tasks > 0 else 0.0
+            
+            courses_progress.append({
+                "course_name": course.title,
+                "total": total_tasks,
+                "completed": completed,
+                "percentage": percentage
+            })
 
         # Keyingi level uchun qancha XP kerak
         from gamification.models import LEVEL_THRESHOLDS
@@ -151,4 +188,6 @@ class GamificationService:
             "success_rate":        success_rate,
             "completed_tasks":     completed_tasks,
             "badges_count":        badges_count,
+            "activity_data":       activity_data,
+            "courses_progress":    courses_progress,
         }

@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 from datetime import timedelta
 import dj_database_url
+from dotenv import load_dotenv
+
+# .env faylini yuklash (agar mavjud bo'lsa) — override=True yangi o'zgarishlarni ham o'qiydi
+load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -154,10 +158,10 @@ AUTH_USER_MODEL = "users.User"
 # REST Framework Sozlamalari
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'users.auth.DemoAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     )
 }
 
@@ -170,5 +174,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# AI Integration
-GEMINI_API_KEY = "AIzaSyD1nwUwF1W4lXAzgZ7I9lR7Ake38sH2pUM"
+# AI Integration (Gemini API)
+# DIQQAT: API kalitni .env faylida saqlang, settings.py da YOZMANG!
+# .env faylida: GEMINI_API_KEY=sizning_kalitingiz
+# Yangi kalit olish: https://aistudio.google.com/apikey
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')

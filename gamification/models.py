@@ -112,3 +112,30 @@ class UserBadge(models.Model):
 
     def __str__(self):
         return f"{self.user.username} → {self.badge.name}"
+
+
+# ============================================================
+# Kunlik Kirish Tarixi — heatmap uchun
+# ============================================================
+class DailyLogin(models.Model):
+    """
+    Foydalanuvchi qaysi kunlari platformaga kirganini kuzatadi.
+    Heatmap diagrammasi uchun ishlatiladi.
+    Bir kunda bir marta yoziladi (unique_together).
+    """
+    user = models.ForeignKey(
+               settings.AUTH_USER_MODEL,
+               on_delete=models.CASCADE,
+               related_name='daily_logins',
+               verbose_name="Foydalanuvchi"
+           )
+    date = models.DateField(verbose_name="Sana")
+
+    class Meta:
+        unique_together = ('user', 'date')
+        ordering = ['-date']
+        verbose_name = "Kunlik kirish"
+        verbose_name_plural = "Kunlik kirishlar"
+
+    def __str__(self):
+        return f"{self.user.username} — {self.date}"

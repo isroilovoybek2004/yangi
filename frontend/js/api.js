@@ -3,19 +3,63 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
     : '/api';
 
 const api = {
-    // Request Wrapper (No longer requires token for Demo)
+    // Request Wrapper with JWT Token
     async fetchProtected(endpoint, options = {}) {
+        const token = localStorage.getItem('access_token');
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
         };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
         let res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
         
         if (res.status === 401) {
-            throw new Error('401: Backend himoyani qabul qilmadi.');
+            // Optional: try refresh token here
+            localStorage.removeItem('access_token');
+            throw new Error('401');
         }
         return res;
+    },
+
+    // Authentication
+    async login(username, password) {
+        const res = await fetch(`${API_BASE}/token/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Login xatosi');
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('username', username);
+        return data;
+    },
+
+    async register(userData) {
+        const res = await fetch(`${API_BASE}/users/register/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            let errorMsg = 'Xatolik yuz berdi';
+            if (data.username) errorMsg = data.username[0];
+            else if (data.email) errorMsg = data.email[0];
+            else if (typeof data === 'string') errorMsg = data;
+            throw new Error(errorMsg);
+        }
+        return data;
+    },
+
+    logout() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('username');
     },
 
     // Resources Fetching
@@ -74,6 +118,19 @@ const api = {
 
     async getStats() {
         const res = await this.fetchProtected('/gamification/stats/');
+        return await res.json();
+    },
+
+    async quizXP() {
+        const res = await this.fetchProtected('/progress/quiz-xp/', {
+            method: 'POST',
+            body: JSON.stringify({})
+        });
+        return await res.json();
+    },
+
+    async getBadges() {
+        const res = await this.fetchProtected('/gamification/badges/');
         return await res.json();
     }
 };

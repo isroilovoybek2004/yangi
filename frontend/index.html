@@ -14,36 +14,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=26">
 </head>
 <body>
     
     <!-- Main App Container -->
     <div id="app-container" class="app-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar glass-panel">
+
+        <!-- Top Navbar -->
+        <nav class="navbar glass-panel">
             <div class="logo">
-                <i class="fa-brands fa-python"></i>
+                <img src="img/python-logo.svg" alt="Python Logo" style="height: 28px; width: 28px;">
                 <span>PyLearn</span>
             </div>
             <ul class="nav-links">
-                <li class="active" data-view="dashboard"><i class="fa-solid fa-house"></i> Bosh sahifa</li>
-                <li data-view="courses"><i class="fa-solid fa-book-open"></i> Kurslar</li>
-                <li data-view="progress"><i class="fa-solid fa-chart-line"></i> Mening vazifalarim</li>
-                <li data-view="leaderboard"><i class="fa-solid fa-trophy"></i> Reyting</li>
-                <li data-view="stats"><i class="fa-solid fa-chart-pie"></i> Statistika</li>
+                <li class="active" data-view="dashboard">Bosh sahifa</li>
+                <li data-view="courses">Mavzular</li>
+                <li data-view="progress">Mening vazifalarim</li>
+                <li data-view="leaderboard">Reyting</li>
+                <li data-view="stats">Statistika</li>
             </ul>
-            <div class="user-profile">
-                <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
-                <div class="user-info">
-                    <span id="nav-username">Mehmon O'quvchi</span>
+            <div class="navbar-right">
+                <div class="user-profile">
+                    <button class="theme-picker-btn" id="theme-picker-btn" title="Fonni o'zgartirish" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; margin-right: 15px;">
+                        <i class="fa-solid fa-palette"></i>
+                    </button>
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <span id="nav-username">Mehmon</span>
+                    <button class="btn-primary" style="margin-left: 15px; padding: 6px 15px; font-size: 0.85rem;" onclick="app.handleLogout()" id="logout-btn">Chiqish</button>
                 </div>
             </div>
-
-            <!-- Theme Picker Button -->
-            <button class="theme-picker-btn" id="theme-picker-btn">
-                <i class="fa-solid fa-palette"></i> Fonni o'zgartirish
-            </button>
         </nav>
 
         <!-- Main Content Area -->
@@ -55,46 +55,105 @@
 
             <!-- Dynamic Views -->
             <div id="views-container">
+                <!-- Auth View (Login / Register) -->
+                <section id="view-auth" class="view">
+                    <div class="auth-container">
+                        <div class="glass-panel auth-box">
+                            <div class="auth-header" style="text-align: center;">
+                                <img src="img/python-logo.svg" alt="Logo" style="height: 48px; margin-bottom: 15px;">
+                                <h2 id="auth-title">Tizimga kirish</h2>
+                                <p id="auth-subtitle" style="color: var(--text-muted); margin-bottom: 20px;">Darslarni davom ettirish uchun akkauntingizga kiring</p>
+                            </div>
+                            
+                            <form id="auth-form" onsubmit="event.preventDefault(); app.handleAuthSubmit();">
+                                <div class="form-group" id="group-email" style="display: none; margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Email</label>
+                                    <input type="email" id="auth-email" placeholder="Sizning emailingiz" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Foydalanuvchi nomi</label>
+                                    <input type="text" id="auth-username" required placeholder="Foydalanuvchi nomi" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Parol</label>
+                                    <input type="password" id="auth-password" required placeholder="Parol" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                </div>
+                                
+                                <div id="auth-error" class="error-msg" style="display:none; color: #ef4444; margin-bottom: 15px; font-size: 0.9rem; text-align: center;"></div>
+                                
+                                <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;" id="auth-submit-btn">Kirish</button>
+                            </form>
+                            
+                            <div class="auth-footer" style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+                                <span id="auth-toggle-text">Akkauntingiz yo'qmi?</span> 
+                                <a href="#" onclick="app.toggleAuthMode(); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;" id="auth-toggle-link">Ro'yxatdan o'tish</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Dashboard View -->
                 <section id="view-dashboard" class="view active">
                     <div class="dashboard-cards">
                         <div class="stat-card glass-panel" title="Joriy darajangiz">
-                            <div class="stat-icon" style="background: var(--secondary-glow);"><i class="fa-solid fa-award"></i></div>
                             <div class="stat-info">
                                 <h3 id="dash-level-name">Yangi boshlovchi</h3>
                                 <p id="dash-level">1-daraja</p>
                             </div>
                         </div>
                         <div class="stat-card glass-panel">
-                            <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
                             <div class="stat-info">
                                 <h3>Umumiy ballar</h3>
                                 <p id="dash-points">0 XP</p>
                             </div>
                         </div>
                         <div class="stat-card glass-panel" title="Ketma-ket faollik kunlari">
-                            <div class="stat-icon" style="background: rgba(255, 69, 0, 0.2);"><i class="fa-solid fa-bolt"></i></div>
                             <div class="stat-info">
                                 <h3>Faollik</h3>
-                                <p id="dash-streak">0 Kun</p>
+                                <p id="dash-streak">0 kun</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="dashboard-secondary-grid">
-                        <div class="glass-panel welcome-card">
-                            <h3>Keyingi sinovga tayyormisiz?</h3>
-                            <p>O'rganishni davom ettirish uchun Kurslar bo'limiga o'ting.</p>
-                            <button class="btn-primary" onclick="app.switchView('courses')">Kurslarni ko'rish</button>
-                        </div>
-                        
-                        <div class="glass-panel badges-preview">
-                            <div class="card-header">
-                                <h3><i class="fa-solid fa-medal"></i> So'nggi yutuqlar</h3>
-                                <button class="btn-text" onclick="app.switchView('stats')">Hammasini ko'rish</button>
+
+                        <!-- Activity Graph (GitHub Style) -->
+                        <div class="glass-panel" style="display: flex; flex-direction: column; grid-column: 1 / -1;">
+                            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                                <h3><i class="fa-regular fa-calendar-check"></i> Faollik tarixi</h3>
+                                <div id="heatmap-year-selector" style="display:flex; gap:6px;"></div>
                             </div>
-                            <div id="dash-badges" class="badges-row">
-                                <p class="empty-msg">Hozircha yutuqlar yo'q.</p>
+                            <div class="activity-graph-container" style="overflow-x: auto; padding: 10px 0;">
+                                <div class="heatmap-wrapper" style="display: inline-flex; gap: 6px;">
+                                    <!-- Day labels on the left -->
+                                    <div class="heatmap-day-labels" id="heatmap-day-labels" style="display:flex; flex-direction:column; justify-content:space-around; padding-top:22px; font-size:0.7rem; color:var(--text-muted); line-height:1;">
+                                        <span style="height:13px; line-height:13px;">Dush</span>
+                                        <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
+                                        <span style="height:13px; line-height:13px;">Chor</span>
+                                        <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
+                                        <span style="height:13px; line-height:13px;">Jum</span>
+                                        <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
+                                        <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
+                                    </div>
+                                    <!-- Grid area -->
+                                    <div style="display:flex; flex-direction:column; gap:0;">
+                                        <div id="activity-months" style="position:relative; height:20px; margin-bottom:4px;"></div>
+                                        <div id="activity-heatmap" class="contribution-graph"></div>
+                                        <div class="graph-legend" style="margin-top: 10px; display: flex; justify-content: flex-end; align-items: center; gap: 5px; font-size: 0.8rem; color: var(--text-muted);">
+                                            Kam <div class="day-box level-0"></div><div class="day-box level-1"></div><div class="day-box level-2"></div><div class="day-box level-3"></div><div class="day-box level-4"></div> Ko'p
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course Mastery Chart -->
+                        <div class="glass-panel" style="display: flex; flex-direction: column;">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-pie"></i> Mavzular o'zlashtirishi</h3>
+                            </div>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="mastery-chart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -109,7 +168,7 @@
 
                 <!-- Lesson / Editor View -->
                 <section id="view-editor" class="view">
-                    <button class="btn-back" onclick="app.switchView('courses')"><i class="fa-solid fa-arrow-left"></i> Kurslarga qaytish</button>
+                    <button class="btn-back" onclick="app.switchView('courses')"><i class="fa-solid fa-arrow-left"></i> Mavzularga qaytish</button>
                     <div class="editor-layout">
                         <!-- Lesson Content -->
                         <div class="lesson-panel glass-panel">
@@ -126,9 +185,20 @@
                                     <i class="fa-solid fa-robot"></i> AI yordamini ko'rsatish
                                 </button>
                                 <div id="ai-hints" class="hints-box hidden">
-                                    <i class="fa-solid fa-robot"></i> <strong>AI Yordami:</strong> <span id="hint-text"></span>
+                                    <i class="fa-solid fa-robot"></i> <strong>AI yordami:</strong> <span id="hint-text"></span>
                                 </div>
                             </div>
+                            
+                            <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 30px 0;">
+
+                            <div class="quiz-section mt-4" id="quiz-section" style="display: none;">
+                                <h3><i class="fa-solid fa-list-check"></i> Mavzulashtirilgan savol-javoblar</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Bilimingizni sinab ko'ring va XP ishlang.</p>
+                                <div id="quiz-container">
+                                    <!-- Quizzes will be injected here -->
+                                </div>
+                            </div>
+
                         </div>
                         
                         <!-- Code Editor Area -->
@@ -169,7 +239,7 @@
                                         <th>Topshiriq</th>
                                         <th>Holat</th>
                                         <th>Ball</th>
-                                        <th>AI Fikr-mulohazasi</th>
+                                        <th>AI fikr-mulohazasi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="progress-tbody">
@@ -287,15 +357,15 @@
         </div>
     </div>
 
-    <!-- CodeMirror Scripts -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/edit/closebrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/selection/active-line.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/addon/comment/comment.min.js"></script>
-    <!-- App Scripts -->
-    <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/api.js?v=10"></script>
+    <script src="js/app.js?v=26"></script>
 </body>
 </html>

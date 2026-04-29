@@ -70,3 +70,5 @@ class UserStatsSerializer(serializers.Serializer):
     success_rate         = serializers.FloatField()
     completed_tasks      = serializers.IntegerField()
     badges_count         = serializers.IntegerField()
+    activity_data        = serializers.ListField(child=serializers.DictField(), read_only=True)
+    courses_progress     = serializers.ListField(child=serializers.DictField(), read_only=True)

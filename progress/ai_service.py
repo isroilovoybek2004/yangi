@@ -1,5 +1,11 @@
 import requests
+import urllib3
+import os
 from django.conf import settings
+from dotenv import load_dotenv
+
+# Mahalliy tarmoqdagi SSL ogohlantirish xabarlarini yopish
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class GeminiService:
@@ -8,12 +14,14 @@ class GeminiService:
     google-genai yoki google-generativeai kutubxonasiga bog'liq emas.
     """
     GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    MODEL_NAME = "gemini-flash-lite-latest"  # Kvotasi mavjud, tez model
+    MODEL_NAME = "gemini-flash-latest"  # Kamroq API quota ishlatuvchi model
 
     def __init__(self):
-        self.api_key = getattr(settings, 'GEMINI_API_KEY', None)
-        if not self.api_key or self.api_key == "YOUR_API_KEY_HERE":
-            raise ValueError("Tarmoq ma'muri (Admin) settings.py da GEMINI_API_KEY o'rnatmagan.")
+        # Har safar .env dan qayta o'qiymiz (StatReloader restart uchun)
+        load_dotenv(override=True)
+        self.api_key = os.environ.get('GEMINI_API_KEY') or getattr(settings, 'GEMINI_API_KEY', None)
+        if not self.api_key or self.api_key in ('', 'YOUR_API_KEY_HERE', 'your_new_api_key_here'):
+            raise ValueError("Tarmoq ma'muri (Admin) .env faylida GEMINI_API_KEY o'rnatmagan.")
 
     def _generate(self, prompt: str) -> str:
         """Gemini API ga so'rov yuboradi va matnli javob qaytaradi."""
@@ -31,7 +39,13 @@ class GeminiService:
             }
         }
         try:
-            response = requests.post(url, params=params, json=payload, timeout=30)
+            response = requests.post(
+                url,
+                params=params,
+                json=payload,
+                timeout=30,
+                verify=False  # Mahalliy tarmoq SSL muammolarini chetlab o'tish
+            )
             # 429 yoki boshqa HTTP xatolarni tekshirish
             if response.status_code == 429:
                 raise RuntimeError("429: API kvotasi tugadi. Keyinroq qayta urinib ko'ring.")

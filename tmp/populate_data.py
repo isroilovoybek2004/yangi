@@ -19,17 +19,45 @@ User = get_user_model()
 def populate():
     print("Eski bazani tozalash...")
     Course.objects.all().delete()
+    print("Boshqaruv rollarini yaratish...")
+    admin_user, created = User.objects.get_or_create(username='admin')
+    if created:
+        admin_user.set_password('admin123')
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.save()
+        print(f"Yangi Admin yaratildi: {admin_user.username}")
+
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contenttypes.models import ContentType
+    from progress.models import Progress, Submission
     
+    teacher_group, created = Group.objects.get_or_create(name='Ustozlar')
+    if created:
+        for model in [Course, Lesson, Task, Quiz, QuizQuestion, QuizChoice]:
+            ct = ContentType.objects.get_for_model(model)
+            perms = Permission.objects.filter(content_type=ct)
+            for perm in perms:
+                teacher_group.permissions.add(perm)
+        
+        # O'quvchilar progressini ko'rish (faqat ko'rish)
+        for model in [Progress, Submission, User]:
+            ct = ContentType.objects.get_for_model(model)
+            perms = Permission.objects.filter(content_type=ct, codename__startswith='view_')
+            for perm in perms:
+                teacher_group.permissions.add(perm)
+
     instructor, created = User.objects.get_or_create(username='testuser')
     if created:
         instructor.set_password('password123')
         instructor.is_staff = True
-        instructor.is_superuser = True
+        instructor.is_superuser = False
         instructor.save()
+        instructor.groups.add(teacher_group)
         print(f"Yangi o'qituvchi yaratildi: {instructor.username}")
 
     course = Course.objects.create(
-        title="Python Dasturlash Asoslari (To'liq Kurs)",
+        title="Python dasturlash asoslari (to'liq kurs)",
         instructor=instructor,
         description="Python dasturlash tilini noldan mukammal o'rganish uchun mo'ljallangan interaktiv va to'liq qo'llanma."
     )
@@ -53,12 +81,12 @@ def populate():
             <div class="typing-demo">Hacking with Python...</div>
 
             <ul>
-                <li><strong>Veb-dasturlash:</strong> Backend qismida (Django, Flask kabi freymvorklar orqali).</li>
-                <li><strong>Sun'iy intelekt va Data Science:</strong> Ma'lumotlarni tahlil qilish va AI yaratishda.</li>
-                <li><strong>Avtomatlashtirish:</strong> Kundalik zerikarli ishlarni kompyuterga topshirish.</li>
+                <li><strong>Veb-dasturlash:</strong> backend qismida (Django, Flask kabi freymvorklar orqali).</li>
+                <li><strong>Sun'iy intelekt va Data Science:</strong> ma'lumotlarni tahlil qilish va AI yaratishda.</li>
+                <li><strong>Avtomatlashtirish:</strong> kundalik zerikarli ishlarni kompyuterga topshirish.</li>
             </ul>
             
-            <h3>Birinchi Dasturingiz: 'Salom, Dunyo!'</h3>
+            <h3>Birinchi dasturingiz: 'Salom, dunyo!'</h3>
             <p>Dasturlash olamida o'rganishni har doim ekranga salomlashish so'zini chiqarish bilan boshlash o'ziga xos an'anaga aylangan. Pythonda ma'lumotni ekranga chiqarish uchun <code class="animate-pulse">print()</code> (chop etish) funksiyasi ishlatiladi.</p>
             
             <pre><code>print("Salom, Dunyo!")</code></pre>
@@ -68,8 +96,8 @@ def populate():
             "tasks": [
                 {
                     "title": "Birinchi qadam",
-                    "question": "Ekranga 'Salom Dunyo' yozuvini chiqaruvchi dastur tuzing.",
-                    "expected_output": "Salom Dunyo",
+                    "question": "Ekranga 'Salom dunyo' yozuvini chiqaruvchi dastur tuzing.",
+                    "expected_output": "Salom dunyo",
                     "ai_hints": "print('Matnbu') funksiyasidan foydalaning, matn qo'shtirnoq ichida bo'lsin."
                 },
                 {
@@ -125,7 +153,7 @@ print(yosh)</code></pre>
                     "ai_hints": "a va b uchun qiymatlar bering. Keyin print(a + b) kabi hisoblang."
                 },
                 {
-                    "title": "Matnlarni qo'shish (Konkatenatsiya)",
+                    "title": "Matnlarni qo'shish (konkatenatsiya)",
                     "question": "ism = 'Ali' va familiya = 'Valiyev' o'zgaruvchilarini s=ism+' '+familiya qilib qo'shing. Natijaviy o'zgaruvchini chop eting (Ali Valiyev).",
                     "expected_output": "Ali Valiyev",
                     "ai_hints": "Matnlarni qo'shish uchun '+' belgisidan foydalanamiz, o'rtada bo'sh joy qo'shish esdan chiqmasin."
@@ -182,7 +210,7 @@ else:
                     "ai_hints": "if y >= 0: ... else: ... ko'rinishida yozing."
                 },
                 {
-                    "title": "Juft yoki Toq",
+                    "title": "Juft yoki toq",
                     "question": "son = 10. Agar son 2 ga qoldiqsiz bo'linsa (son % 2 == 0) 'Juft', aks holda 'Toq' yozuvini chiqaring.",
                     "expected_output": "Juft",
                     "ai_hints": "Bo'linmaning qoldig'ini topish uchun '%' operatoridan foydalaniladi. Agar son % 2 == 0 bo'lsa demak u juft."
@@ -203,7 +231,7 @@ else:
                 <div class="loop-item">4</div>
             </div>
 
-            <h3>For Tsikli</h3>
+            <h3>For tsikli</h3>
             <p><code>for</code> odatda qandaydir xudud yoki to'plam bo'ylab aylanib chiqish uchun ishlatiladi. Eng ko'p <code>range()</code> (oraliq) funksiyasi bilan birga uchraydi.</p>
             <pre><code>for i in range(1, 4):
     print(i) # 1, 2, 3 chiqadi</code></pre>
@@ -212,7 +240,7 @@ else:
                 <iframe src="https://www.youtube.com/embed/6iF8Xb7Z3wQ" title="Python For Loop" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
 
-            <h3>While Tsikli</h3>
+            <h3>While tsikli</h3>
             <p><code>while</code> (toki... gacha) esa berilgan shart to'g'ri (True) bo'lib turguniga qadar ishlashda davom etaveradi.</p>
             <pre><code>k = 1
 while k &lt;= 3:
