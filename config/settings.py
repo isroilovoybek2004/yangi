@@ -102,7 +102,8 @@ DATABASES = {
 }
 
 # Try to override database config from DATABASE_URL env var if it exists
-db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=False)
+# Neon DB requires SSL, so we set ssl_require=True
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 if db_from_env:
     DATABASES["default"].update(db_from_env)
 

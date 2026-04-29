@@ -21,4 +21,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', '')
         )
+        
+        # Yangi foydalanuvchi ro'yxatdan o'tganda darhol progress (gamification profile) yaratish
+        from gamification.services import GamificationService
+        GamificationService.get_or_create_profile(user)
+        
         return user
