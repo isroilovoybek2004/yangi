@@ -26,7 +26,7 @@ class TeacherAdminSite(AdminSite):
         uchun bu panel ochiq.
         Superuser standart /admin/ ni ishlatadi.
         """
-        return request.user.is_active and request.user.is_staff
+        return request.user.is_active and request.user.is_staff and not request.user.is_superuser
 
     def get_app_list(self, request, app_label=None):
         """Faqat ruxsat etilgan app va modellarni qaytaradi."""

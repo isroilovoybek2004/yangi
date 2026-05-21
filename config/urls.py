@@ -42,6 +42,9 @@ teacher_admin_site.register(Task,         TaskAdmin)
 teacher_admin_site.register(Quiz,         QuizAdmin)
 teacher_admin_site.register(QuizQuestion, QuizQuestionAdmin)
 
+# Standart /admin/ faqat superuserlar (admin) uchun ochiq bo'ladi
+admin.site.has_permission = lambda request: request.user.is_active and request.user.is_superuser
+
 urlpatterns = [
     path("admin/",  admin.site.urls),
     path("ustoz/",  teacher_admin_site.urls),   # O'qituvchi paneli
