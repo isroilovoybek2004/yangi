@@ -726,7 +726,17 @@ class Command(BaseCommand):
             # Dars nomi bo'yicha ma'lumot qidirish
             quiz_data = None
             for key, data in QUIZZES_DATA.items():
-                if key in lesson.title:
+                # Normalizatsiya qilamiz (pastki registr, apostrof, qo'shtirnoq va chiziqlarni olib tashlash)
+                def normalize(text):
+                    for char in ["'", "`", "’", "“", "”", '"', "-"]:
+                        text = text.replace(char, "")
+                    return " ".join(text.lower().split())
+
+                norm_key = normalize(key)
+                norm_title = normalize(lesson.title)
+
+                # Shartli tekshirish: kalit sarlavha ichida bormi yoki sarlavha kalit ichidami
+                if norm_key in norm_title or norm_title in norm_key:
                     quiz_data = data
                     break
 
@@ -737,16 +747,15 @@ class Command(BaseCommand):
                 total_skipped += 1
                 continue
 
-            # Agar force bo'lsa va quiz mavjud bo'lsa — uni o'chirib qayta yozamiz
-            existing = lesson.quizzes.filter(title=quiz_data['quiz_title'])
-            if existing.exists():
+            # Agar force bo'lsa, darsga tegishli barcha mavjud testlarni o'chiramiz va toza yozamiz
+            if lesson.quizzes.exists():
                 if force:
-                    existing.delete()
-                    self.stdout.write(f"  [DEL]  Mavjud quiz o'chirildi: '{quiz_data['quiz_title']}'")
+                    lesson.quizzes.all().delete()
+                    self.stdout.write(f"  [DEL]  [{lesson.id}] '{lesson.title}' uchun barcha eski quizlar o'chirildi.")
                 else:
                     self.stdout.write(
                         self.style.WARNING(
-                            f"  [SKIP]  [{lesson.id}] '{lesson.title}' - quiz mavjud, o'tkazildi (--force yozing qayta yozish uchun)"
+                            f"  [SKIP]  [{lesson.id}] '{lesson.title}' - test mavjud, o'tkazildi (--force yozing qayta yozish uchun)"
                         )
                     )
                     total_skipped += 1

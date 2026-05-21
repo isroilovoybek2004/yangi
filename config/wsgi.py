@@ -51,5 +51,14 @@ try:
         User = get_user_model()
         if not User.objects.filter(username="admin").exists():
             User.objects.create_superuser("admin", "admin@example.com", "admin123")
+
+    # Seed quizzes if they are missing for some lessons
+    try:
+        from lessons.models import Lesson, Quiz
+        if Lesson.objects.exists() and Quiz.objects.count() < Lesson.objects.count():
+            print("Missing quizzes detected. Auto seeding quizzes...")
+            call_command("seed_quizzes", force=True, interactive=False)
+    except Exception as qe:
+        print("Auto seeding missing quizzes failed:", qe)
 except Exception as e:
     print("Auto-migrate or seed failed:", e)
