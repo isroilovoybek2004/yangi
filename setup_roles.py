@@ -1,8 +1,10 @@
 import os
 import django
+from django.apps import apps
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
+if not apps.ready:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    django.setup()
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
