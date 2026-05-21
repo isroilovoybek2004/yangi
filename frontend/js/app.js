@@ -134,9 +134,9 @@ const app = {
     toggleAuthMode() {
         this.isLoginMode = !this.isLoginMode;
         document.getElementById('auth-title').innerText = this.isLoginMode ? 'Tizimga kirish' : "Ro'yxatdan o'tish";
-        document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "Darslarni davom ettirish uchun akkauntingizga kiring" : "Yangi platformaga xush kelibsiz";
+        document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "O'quv jarayonini davom ettirish uchun tizimda avtorizatsiyadan o'ting" : "Platformamizga xush kelibsiz";
         document.getElementById('auth-submit-btn').innerText = this.isLoginMode ? 'Kirish' : "Ro'yxatdan o'tish";
-        document.getElementById('auth-toggle-text').innerText = this.isLoginMode ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?";
+        document.getElementById('auth-toggle-text').innerText = this.isLoginMode ? "Tizimda shaxsiy hisobingiz mavjud emasmi?" : "Tizimda shaxsiy hisobingiz mavjudmi?";
         document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish" : 'Kirish';
         document.getElementById('group-email').style.display = this.isLoginMode ? 'none' : 'block';
         document.getElementById('auth-error').style.display = 'none';
@@ -830,8 +830,8 @@ const app = {
                 }
             }, 300);
         } else {
-            this.taskTitle.innerText = "Vazifalar yo'q";
-            this.taskQuestion.innerText = "Ushbu dars uchun hozircha vazifalar mavjud emas.";
+            this.taskTitle.innerText = "Amaliy topshiriqlar mavjud emas";
+            this.taskQuestion.innerText = "Ushbu mavzu bo'yicha hozircha amaliy topshiriqlar yuklanmagan.";
             this.currentTask = null;
             hintsBox.classList.add('hidden');
         }
@@ -990,10 +990,10 @@ const app = {
             this.switchView('auth');
             return;
         }
-        if (!this.currentTask) return alert("Avval darsni tanlang!");
+        if (!this.currentTask) return alert("Iltimos, avval mavzuni tanlang.");
         
         const code = this.cmEditor.getValue();
-        if (!code.trim()) return alert("Iltimos, kod yozing!");
+        if (!code.trim()) return alert("Iltimos, dastur kodini kiriting.");
         
         this.submissionResult.className = 'terminal-output';
         this.submissionResult.innerHTML = 'Mantiq tekshirilmoqda... <i class="fa-solid fa-spinner fa-spin"></i>';
@@ -1017,7 +1017,7 @@ const app = {
             }
         } catch(e) {
             this.submissionResult.className = 'terminal-output error';
-            this.submissionResult.innerHTML = 'Backend bilan bog\'lanishda xato yuz berdi.';
+            this.submissionResult.innerHTML = 'Tizim serveri bilan bog\'lanishda xatolik yuz berdi.';
         }
     },
 
@@ -1028,11 +1028,11 @@ const app = {
             this.switchView('auth');
             return;
         }
-        if (!this.currentTask) return alert("Avval masalani tanlang.");
+        if (!this.currentTask) return alert("Iltimos, avval amaliy topshiriqni tanlang.");
         const code = this.cmEditor.getValue();
 
         if (type === 'explain') {
-            if (!code.trim()) return alert("Tushuntirish uchun kod yozing.");
+            if (!code.trim()) return alert("Iltimos, tushuntirish uchun dastur kodini kiriting.");
         }
 
         let payload = { code: code, task_question: this.currentTask.question };
@@ -1040,9 +1040,9 @@ const app = {
         if (type === 'analyze') {
             const terminalText = this.submissionResult.innerText.trim();
             // Terminal bo'sh yoki faqat "Kutilmoqda" matni bo'lsa bloklash
-            const isIdle = !terminalText || terminalText === 'Kutilmoqda...' || terminalText === 'Natijani kutilmoqda...';
+            const isIdle = !terminalText || terminalText === 'Kutilmoqda...' || terminalText === 'Natija kutilmoqda...';
             if (isIdle) {
-                return alert("Tahlil qilish uchun avval kodni yuborib, xato chiqaring.");
+                return alert("Xatolikni tahlil qilish uchun avval topshiriq kodini tekshirishga yuboring.");
             }
             payload.error_message = terminalText;
         }

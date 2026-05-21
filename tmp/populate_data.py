@@ -116,7 +116,7 @@ def populate():
             ]
         },
         {
-            "title": "2. O'zgaruvchilar va Ma'lumot Turlari",
+            "title": "2. O'zgaruvchilar va ma'lumot turlari",
             "video_url": "https://www.youtube.com/embed/khKv-8q7YmY",
             "content": """
             <h2>O'zgaruvchilar (Variables)</h2>
@@ -169,7 +169,7 @@ print(yosh)</code></pre>
             ]
         },
         {
-            "title": "3. Shartli Operatorlar (if, elif, else)",
+            "title": "3. Shartli operatorlar (if, elif, else)",
             "video_url": "https://www.youtube.com/embed/AWek4Yv0Krs",
             "content": """
             <h2>Qaror qabul qilish (Conditions)</h2>
@@ -207,7 +207,7 @@ else:
                     "ai_hints": "if x > 0: deb yozing, va keyingi qatorda biroz bo'sh joy tashlab print yozing."
                 },
                 {
-                    "title": "Else dan foydalanish",
+                    "title": "Else operatoridan foydalanish",
                     "question": "y = -5. Agar y 0 dan katta yoki teng bo'lsa 'Musbat', aks holda (else) 'Manfiy' deb chiqaring.",
                     "expected_output": "Manfiy",
                     "ai_hints": "if y >= 0: ... else: ... ko'rinishida yozing."
@@ -267,7 +267,7 @@ while k &lt;= 3:
                     "ai_hints": "range(2, 11, 2) ni ishlating. Uchinchi parametr qadam (qanchaga oshish) vazifasini bajaradi."
                 },
                 {
-                    "title": "While dan foydalanish",
+                    "title": "While operatoridan foydalanish",
                     "question": "k = 3. while siklidan foydalanib k > 0 gacha k ni ekranga chiqaring. Har takrorlanishda k ni 1 taga kamaytirib boring (k -= 1).",
                     "expected_output": "3\n2\n1",
                     "ai_hints": "while k > 0: deb boshlang, va har safar k ni qiymatini o'zgartirishni unutmang."
@@ -327,7 +327,7 @@ print(qosh(10, 5)) # 15 chiqadi</code></pre>
             ]
         },
         {
-            "title": "6. Ma'lumotlar Tuzilmalari: Ro'yxatlar (List)",
+            "title": "6. Ma'lumotlar tuzilmalari: ro'yxatlar (list)",
             "video_url": "https://www.youtube.com/embed/ohCDWZgNIU0",
             "content": """
             <h2>Ro'yxatlar bilan ishlash (Lists)</h2>
