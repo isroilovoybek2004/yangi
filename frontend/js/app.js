@@ -259,7 +259,7 @@ const app = {
             const titles = {
                 'landing': 'Tashrif sahifasi',
                 'dashboard': 'Asosiy panel',
-                'courses': 'O\'quv modullari',
+                'courses': 'Mavzular',
                 'progress': 'O\'zlashtirish monitoringi',
                 'editor': 'Interaktiv laboratoriya',
                 'leaderboard': 'Akademik reyting',

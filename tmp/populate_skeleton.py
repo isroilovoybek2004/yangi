@@ -29,7 +29,7 @@ User = get_user_model()
 
 SKELETON_DATA = [
     {
-        "course_title": "Python Dasturlash Asoslari (To'liq Kurs)",
+        "course_title": "Python Dasturlash Asoslari",
         "lessons": [
 
             # ═══════════════════════════════════

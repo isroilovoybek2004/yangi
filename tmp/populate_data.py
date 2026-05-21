@@ -57,7 +57,7 @@ def populate():
         print(f"Yangi o'qituvchi yaratildi: {instructor.username}")
 
     course = Course.objects.create(
-        title="Python dasturlash asoslari (to'liq kurs)",
+        title="Python dasturlash asoslari",
         instructor=instructor,
         description="Python dasturlash tilini noldan mukammal o'rganish uchun mo'ljallangan interaktiv va to'liq qo'llanma."
     )
