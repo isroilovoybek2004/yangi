@@ -133,11 +133,11 @@ const app = {
 
     toggleAuthMode() {
         this.isLoginMode = !this.isLoginMode;
-        document.getElementById('auth-title').innerText = this.isLoginMode ? "Tizimda avtorizatsiyadan o'tish" : "Ro'yxatdan o'tish (Hisob yaratish)";
+        document.getElementById('auth-title').innerText = this.isLoginMode ? "Tizimda avtorizatsiyadan o'tish" : "Ro'yxatdan o'tish";
         document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "O'quv jarayonini davom ettirish uchun shaxsiy profilingizga kiring" : "Platformaning barcha imkoniyatlaridan foydalanish uchun tizimda ro'yxatdan o'ting";
         document.getElementById('auth-submit-btn').innerText = this.isLoginMode ? "Tizimga kirish" : "Ro'yxatdan o'tish";
         document.getElementById('auth-toggle-text').innerText = this.isLoginMode ? "Tizimda shaxsiy hisobingiz mavjud emasmi?" : "Tizimda shaxsiy hisobingiz mavjudmi?";
-        document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish (Hisob yaratish)" : "Tizimga kirish";
+        document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish" : "Tizimga kirish";
         document.getElementById('group-email').style.display = this.isLoginMode ? 'none' : 'block';
         document.getElementById('auth-error').style.display = 'none';
     },
