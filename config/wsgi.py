@@ -22,6 +22,13 @@ try:
     from django.core.management import call_command
     call_command("migrate", interactive=False)
     
+    # Ensure roles and users are properly configured in database
+    try:
+        from setup_roles import setup_roles
+        setup_roles()
+    except Exception as re:
+        print("Setup roles failed:", re)
+    
     # Check if database is empty to run seeders
     from courses.models import Course
     from lessons.models import Lesson
