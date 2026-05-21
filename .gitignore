@@ -21,3 +21,5 @@ db.sqlite3
 
 # Local media uploads
 media/
+
+.vercel

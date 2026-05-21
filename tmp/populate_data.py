@@ -66,6 +66,7 @@ def populate():
     lessons_data = [
         {
             "title": "1. Kirish va Python haqida tushuncha",
+            "video_url": "https://www.youtube.com/embed/Z1Yd7upQsXY?si=tM3Hk6O1eT4Z-t2v",
             "content": """
             <h2>Python nimaga kerak?</h2>
             
@@ -116,6 +117,7 @@ def populate():
         },
         {
             "title": "2. O'zgaruvchilar va Ma'lumot Turlari",
+            "video_url": "https://www.youtube.com/embed/khKv-8q7YmY",
             "content": """
             <h2>O'zgaruvchilar (Variables)</h2>
             <p>O'zgaruvchi — bu kompyuter xotirasidagi ma'lumotni saqlab turuvchi quti (konteyner). Kodda har doim uzundan-uzoq sonlarni yoki matnlarni yozish noqulay, shuning uchun biz ularga nom beramiz.</p>
@@ -168,6 +170,7 @@ print(yosh)</code></pre>
         },
         {
             "title": "3. Shartli Operatorlar (if, elif, else)",
+            "video_url": "https://www.youtube.com/embed/AWek4Yv0Krs",
             "content": """
             <h2>Qaror qabul qilish (Conditions)</h2>
             <p>Dasturlar har doim ham bitta tekislikda ishlamaydi. Ko'pincha qandaydir shartlarga tekshirish talab etiladi. Buning uchun Pythonda <code>if</code> (agar), <code>elif</code> (yoki agar), va <code>else</code> (aks holda) so'zlaridan foydalaniladi.</p>
@@ -219,6 +222,7 @@ else:
         },
         {
             "title": "4. Sikllar (for va while)",
+            "video_url": "https://www.youtube.com/embed/6iF8Xb7Z3wQ",
             "content": """
             <h2>Takrorlanuvchi jarayonlar (Loops)</h2>
             <p>Aytaylik, biror amalni 100 marta bajarishingiz kerak. 100 qator kod yozish o'rniga biz tsikllardan (loop) foydalanamiz. Pythonda ikkita asosiy tsikl mavjud: <strong>for</strong> va <strong>while</strong>.</p>
@@ -272,6 +276,7 @@ while k &lt;= 3:
         },
         {
             "title": "5. Funksiyalar bilan ishlash",
+            "video_url": "https://www.youtube.com/embed/9Os0o3wzS_I",
             "content": """
             <h2>Funksiyalar (Functions)</h2>
             <p>Qayta-qayta ishlatiladigan kod bloklarini bitta qolipga solish — funksiya deb ataladi. U dasturni ixcham va o'qish uchun qulay qilib beradi. Pythonda funksiyalar <code>def</code> kalit so'zi vositasida e'lon qilinadi.</p>
@@ -323,6 +328,7 @@ print(qosh(10, 5)) # 15 chiqadi</code></pre>
         },
         {
             "title": "6. Ma'lumotlar Tuzilmalari: Ro'yxatlar (List)",
+            "video_url": "https://www.youtube.com/embed/ohCDWZgNIU0",
             "content": """
             <h2>Ro'yxatlar bilan ishlash (Lists)</h2>
             <p>Biz bitta e'lon qilgan o'zgaruvchimizda butun boshli kolleksiyani (ko'plab ma'lumotlarni) saqlashimiz mumkin ekan! Eng ko'p tarqalgan ustun tur bu — `List` (Ro'yxat).</p>
@@ -387,6 +393,8 @@ raqamlar = [1, 5, 20, 100]</code></pre>
             course=course,
             title=l_data['title'],
             content=l_data['content'],
+            video_url=l_data.get('video_url', ''),
+            lesson_type='mixed' if l_data.get('video_url') else 'theory',
             order=i + 1
         )
         print(f"\nDars qo'shildi: {lesson.title}")

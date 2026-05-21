@@ -37,10 +37,11 @@ SKELETON_DATA = [
             # ═══════════════════════════════════
             {
                 "title": "7. Lug'atlar (Dictionary) bilan ishlash",
-                "lesson_type": "theory",
+                "lesson_type": "mixed",
                 "difficulty": "intermediate",
                 "estimated_minutes": 6,
                 "summary": "Python dictionary — kalit:qiymat juftliklari, yaratish va asosiy metodlar.",
+                "video_url": "https://www.youtube.com/embed/S2fF-J5Yv4k",
                 "content": """
 <h2>Lug'atlar (Dictionary) nima?</h2>
 
@@ -264,10 +265,11 @@ h.tekshir()
             # ═══════════════════════════════════
             {
                 "title": "9. Modullar va paketlar",
-                "lesson_type": "theory",
+                "lesson_type": "mixed",
                 "difficulty": "intermediate",
                 "estimated_minutes": 7,
                 "summary": "Python da import, standart kutubxona va tashqi paketlardan foydalanish.",
+                "video_url": "https://www.youtube.com/embed/k5q4sUa0sDk",
                 "content": """
 <h2>Modullar (Modules)</h2>
 
@@ -381,6 +383,55 @@ print(hozir.month)  # Joriy oy
                     }
                 ],
             },
+            # ═══════════════════════════════════
+            #  DARS 10: XATOLARNI QAYTA ISHLASH (TRY-EXCEPT)
+            # ═══════════════════════════════════
+            {
+                "title": "10. Xatolarni qayta ishlash (try-except)",
+                "lesson_type": "mixed",
+                "difficulty": "intermediate",
+                "estimated_minutes": 5,
+                "summary": "Python da xatolarni ushlash va boshqarish.",
+                "video_url": "https://www.youtube.com/embed/kY-8S4R4b-Q",
+                "content": """
+<h2>Xatolarni qayta ishlash (try-except)</h2>
+
+<p>Dasturlar har doim ham mukammal ishlamaydi. Ba'zida kutilmagan holatlar tufayli dastur xatolik berib to'xtab qolishi mumkin. Buni oldini olish va dasturni xatoliksiz davom ettirish uchun <strong>try-except</strong> blokidan foydalanamiz.</p>
+
+<h3>Tuzilishi</h3>
+<pre><code>try:
+    # Xavfli bo'lgan, xato berishi mumkin bo'lgan kod
+    x = 10 / 0
+except ZeroDivisionError:
+    # Xato yuz berganda bajariladigan kod
+    print("Sonni nolga bo'lish mumkin emas!")
+</code></pre>
+
+<h3>Nega bu kerak?</h3>
+<p>Agar biz try-except dan foydalanmasak, dastur o'sha xatolik yuz bergan qatordayoq qizil yozuvlar bilan butunlay to'xtab qoladi. try-except esa xatoni chiroyli tarzda ushlab olib, dasturni boshqarishga imkon beradi.</p>
+
+<h3>Finally bloki</h3>
+<p><code>finally</code> bloki ichidagi kod xato yuz berishidan qat'iy nazar <strong>har doim</strong> bajariladi. U odatda fayllarni yopish yoki ma'lumotlar bazasi ulanishlarini tozalash uchun ishlatiladi.</p>
+<pre><code>try:
+    print("Ulanish...")
+except:
+    print("Xato!")
+finally:
+    print("Har doim ishlaydi!")
+</code></pre>
+""",
+                "tasks": [
+                    {
+                        "title": "Nolga bo'lish xatosi",
+                        "question": "try-except bloki orqali 10 / 0 bo'lish xatosini ushlang va ekranga 'Xato yuz berdi' yozuvini chiqaring.",
+                        "starter_code": "try:\n    # bu yerga kod yozing\nexcept ZeroDivisionError:\n    # bu yerga kod yozing",
+                        "expected_output": "Xato yuz berdi",
+                        "ai_hints": "try ichida 10 / 0 ni hisoblang, except ichida esa print('Xato yuz berdi') ni yozing.",
+                        "difficulty": "intermediate",
+                    }
+                ],
+                "quizzes": []
+            },
 
         ]
     },
@@ -400,7 +451,7 @@ def populate(course_id=None, clear=False):
                 print(f"❌ Kurs topilmadi: ID={course_id}")
                 return
         else:
-            course = Course.objects.filter(title=course_title).first()
+            course = Course.objects.filter(title__iexact=course_title).first()
             if not course:
                 print(f"❌ Kurs topilmadi: '{course_title}'")
                 continue

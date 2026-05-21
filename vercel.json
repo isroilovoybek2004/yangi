@@ -20,6 +20,10 @@
       "dest": "config/wsgi.py"
     },
     {
+      "src": "/ustoz/(.*)",
+      "dest": "config/wsgi.py"
+    },
+    {
       "src": "/static/(.*)",
       "dest": "config/wsgi.py"
     },
