@@ -120,7 +120,7 @@ const app = {
     showApp() {
         const token = localStorage.getItem('access_token');
         if (!token) {
-            this.switchView('auth');
+            this.switchView('courses');
         } else {
             this.switchView('dashboard');
         }
@@ -188,6 +188,13 @@ const app = {
     },
 
     switchView(viewName) {
+        const token = localStorage.getItem('access_token');
+        const protectedViews = ['dashboard', 'progress', 'leaderboard', 'stats'];
+        if (!token && protectedViews.includes(viewName)) {
+            this.switchView('auth');
+            return;
+        }
+
         // Navbarni berkitish yoki ko'rsatish
         const navLinksElem = document.querySelector('.nav-links');
         const userProfile = document.querySelector('.user-profile');
@@ -198,10 +205,37 @@ const app = {
             if (navLinksElem) navLinksElem.style.display = 'flex';
             if (userProfile) userProfile.style.display = 'flex';
             
-            // Username yangilash
-            const savedUser = localStorage.getItem('username');
-            if (savedUser && this.navUsername) {
-                this.navUsername.innerText = savedUser;
+            // Guest yoki Auth holatiga ko'ra navbarni moslashtirish
+            if (!token) {
+                this.navLinks.forEach(link => {
+                    const view = link.getAttribute('data-view');
+                    if (view !== 'courses') {
+                        link.style.display = 'none';
+                    } else {
+                        link.style.display = '';
+                    }
+                });
+                if (this.navUsername) {
+                    this.navUsername.innerText = 'Mehmon';
+                }
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.innerText = 'Kirish';
+                    logoutBtn.onclick = () => this.switchView('auth');
+                }
+            } else {
+                this.navLinks.forEach(link => {
+                    link.style.display = '';
+                });
+                const savedUser = localStorage.getItem('username');
+                if (savedUser && this.navUsername) {
+                    this.navUsername.innerText = savedUser;
+                }
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.innerText = 'Chiqish';
+                    logoutBtn.onclick = () => this.handleLogout();
+                }
             }
         }
 
@@ -551,11 +585,19 @@ const app = {
     async loadCourses() {
         this.coursesList.innerHTML = '<p>Yuklanmoqda...</p>';
         try {
-            const [courses, lessons, progress] = await Promise.all([
+            const token = localStorage.getItem('access_token');
+            const promises = [
                 api.getCourses(),
-                api.getLessons(),
-                api.getProgress()
-            ]);
+                api.getLessons()
+            ];
+            if (token) {
+                promises.push(api.getProgress());
+            }
+            
+            const results = await Promise.all(promises);
+            const courses = results[0];
+            const lessons = results[1];
+            const progress = token ? results[2] : [];
 
             this.coursesList.innerHTML = '';
 
@@ -665,6 +707,36 @@ const app = {
     async openLesson(lesson) {
         this.switchView('editor');
         this.lessonTitle.innerText = lesson.title;
+
+        // Guest check & panel locking
+        const token = localStorage.getItem('access_token');
+        const codingPanel = document.querySelector('.coding-panel');
+        if (codingPanel) {
+            const existingOverlay = codingPanel.querySelector('.guest-lock-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+
+            if (!token) {
+                const lockOverlay = document.createElement('div');
+                lockOverlay.className = 'guest-lock-overlay';
+                lockOverlay.innerHTML = `
+                    <i class="fa-solid fa-lock lock-icon"></i>
+                    <h3>Topshiriq yopiq</h3>
+                    <p>Kodni bajarish, natijani tekshirish va AI yordamchisidan foydalanish uchun tizimga kiring.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 8px;" onclick="app.switchView('auth')">Kirish</button>
+                `;
+                codingPanel.appendChild(lockOverlay);
+
+                if (this.cmEditor) {
+                    this.cmEditor.setOption('readOnly', 'nocursor');
+                }
+            } else {
+                if (this.cmEditor) {
+                    this.cmEditor.setOption('readOnly', false);
+                }
+            }
+        }
 
         // --- YouTube video ---
         let contentHtml = lesson.content || "Mavzu bo'yicha ma'lumot yuklanmoqda...";
@@ -835,6 +907,12 @@ const app = {
                     });
                     
                     if (score === quiz.questions.length && score > 0) {
+                        const token = localStorage.getItem('access_token');
+                        if (!token) {
+                            alert(`🎉 Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!\nXP va yutuqlarni to'plash uchun tizimga kiring!`);
+                            this.switchView('auth');
+                            return;
+                        }
                         // XP berish API ga so'rov
                         try {
                             const xpRes = await api.quizXP();
@@ -872,6 +950,13 @@ const app = {
         const hintsToggle = document.getElementById('btn-toggle-hints');
         this.taskTitle.innerText = task.title;
         this.taskQuestion.innerText = task.question;
+
+        // Set CodeMirror read-only state based on token
+        const token = localStorage.getItem('access_token');
+        if (this.cmEditor) {
+            this.cmEditor.setOption('readOnly', !token ? 'nocursor' : false);
+        }
+
         // Boshlang'ich kodni editorga yuklash
         const starterCode = task.starter_code || '';
         this.cmEditor.setValue(starterCode);
@@ -898,6 +983,12 @@ const app = {
 
 
     async submitTask() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert("Vazifalarni topshirish uchun tizimga kiring!");
+            this.switchView('auth');
+            return;
+        }
         if (!this.currentTask) return alert("Avval darsni tanlang!");
         
         const code = this.cmEditor.getValue();
@@ -930,6 +1021,12 @@ const app = {
     },
 
     async askAI(type) {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert("AI yordamidan foydalanish uchun tizimga kiring!");
+            this.switchView('auth');
+            return;
+        }
         if (!this.currentTask) return alert("Avval masalani tanlang.");
         const code = this.cmEditor.getValue();
 

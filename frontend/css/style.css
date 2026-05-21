@@ -931,7 +931,7 @@ a { text-decoration: none; color: inherit; }
     border-radius: 8px; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.coding-panel { display: flex; flex-direction: column; padding: 0; overflow: hidden; min-height: 0; }
+.coding-panel { display: flex; flex-direction: column; padding: 0; overflow: hidden; min-height: 0; position: relative; }
 .editor-header {
     background: rgba(0,0,0,0.3); padding: 12px 20px;
     display: flex; justify-content: space-between; align-items: center;
@@ -1314,4 +1314,66 @@ a { text-decoration: none; color: inherit; }
     .nav-links li { padding: 6px 10px; font-size: 0.82rem; }
     .main-content { padding: 20px 16px; }
     .user-profile #nav-username { display: none; }
+}
+
+/* === Guest Lock Overlay (Option B) === */
+.guest-lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(11, 15, 25, 0.85); /* Semitransparent matching theme */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-radius: 16px;
+    padding: 30px 24px;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid var(--border-glass);
+}
+
+.guest-lock-overlay i.lock-icon {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+    animation: lock-pulse 2s infinite ease-in-out;
+}
+
+.guest-lock-overlay h3 {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.guest-lock-overlay p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    max-width: 320px;
+    line-height: 1.6;
+}
+
+/* Light theme overrides for guest overlay */
+[data-theme="light"] .guest-lock-overlay {
+    background: rgba(240, 242, 245, 0.92);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .guest-lock-overlay h3 {
+    color: #1a1a2e;
+}
+[data-theme="light"] .guest-lock-overlay p {
+    color: #555770;
+}
+
+@keyframes lock-pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.3)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.3)); }
 }
