@@ -723,9 +723,9 @@ const app = {
                 lockOverlay.className = 'guest-lock-overlay';
                 lockOverlay.innerHTML = `
                     <i class="fa-solid fa-lock lock-icon"></i>
-                    <h3>Topshiriq yopiq</h3>
-                    <p>Kodni bajarish, natijani tekshirish va AI yordamchisidan foydalanish uchun tizimga kiring.</p>
-                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 8px;" onclick="app.switchView('auth')">Kirish</button>
+                    <h3>Amaliy topshiriq cheklangan</h3>
+                    <p>Dasturiy kodni ishga tushirish, natijalarni tahlil qilish hamda intellektual assistent yordamidan foydalanish uchun tizimda avtorizatsiyadan o'ting.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 8px;" onclick="app.switchView('auth')">Tizimga kirish</button>
                 `;
                 codingPanel.appendChild(lockOverlay);
 
@@ -910,7 +910,7 @@ const app = {
                     if (score === quiz.questions.length && score > 0) {
                         const token = localStorage.getItem('access_token');
                         if (!token) {
-                            alert(`🎉 Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!\nXP va yutuqlarni to'plash uchun tizimga kiring!`);
+                            alert(`Muqobil test savollariga muvaffaqiyatli javob berildi. Ballarni (XP) va o'zlashtirish ko'rsatkichlarini rasmiylashtirish uchun tizimda avtorizatsiyadan o'tishingiz so'raladi.`);
                             this.switchView('auth');
                             return;
                         }
@@ -986,7 +986,7 @@ const app = {
     async submitTask() {
         const token = localStorage.getItem('access_token');
         if (!token) {
-            alert("Vazifalarni topshirish uchun tizimga kiring!");
+            alert("Amaliy topshiriqlarni topshirish va baholash tizimidan o'tish uchun tizimda avtorizatsiyadan o'tish talab etiladi.");
             this.switchView('auth');
             return;
         }
@@ -1024,7 +1024,7 @@ const app = {
     async askAI(type) {
         const token = localStorage.getItem('access_token');
         if (!token) {
-            alert("AI yordamidan foydalanish uchun tizimga kiring!");
+            alert("Sun'iy intellekt assistenti xizmatlaridan foydalanish uchun tizimda avtorizatsiyadan o'tish talab etiladi.");
             this.switchView('auth');
             return;
         }
