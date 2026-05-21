@@ -120,7 +120,7 @@ const app = {
     showApp() {
         const token = localStorage.getItem('access_token');
         if (!token) {
-            this.switchView('courses');
+            this.switchView('landing');
         } else {
             this.switchView('dashboard');
         }
@@ -257,6 +257,7 @@ const app = {
             
             // Set Titles
             const titles = {
+                'landing': 'Bosh sahifa',
                 'dashboard': 'Bosh sahifa',
                 'courses': 'Mavjud mavzular',
                 'progress': 'Mening vazifalarim',
