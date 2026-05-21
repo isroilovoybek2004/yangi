@@ -28,11 +28,11 @@
                 <span>PyLearn</span>
             </div>
             <ul class="nav-links">
-                <li class="active" data-view="dashboard">Bosh sahifa</li>
-                <li data-view="courses">Mavzular</li>
-                <li data-view="progress">Mening vazifalarim</li>
-                <li data-view="leaderboard">Reyting</li>
-                <li data-view="stats">Statistika</li>
+                <li class="active" data-view="dashboard">Asosiy panel</li>
+                <li data-view="courses">O'quv modullari</li>
+                <li data-view="progress">O'zlashtirish monitoringi</li>
+                <li data-view="leaderboard">Akademik reyting</li>
+                <li data-view="stats">Batafsil tahlil</li>
             </ul>
             <div class="navbar-right">
                 <div class="user-profile">
@@ -40,8 +40,8 @@
                         <i class="fa-solid fa-palette"></i>
                     </button>
                     <div class="avatar"><i class="fa-solid fa-user"></i></div>
-                    <span id="nav-username">Mehmon</span>
-                    <button class="btn-primary" style="margin-left: 15px; padding: 6px 15px; font-size: 0.85rem;" onclick="app.handleLogout()" id="logout-btn">Chiqish</button>
+                    <span id="nav-username">Tashrif buyuruvchi</span>
+                    <button class="btn-primary" style="margin-left: 15px; padding: 6px 15px; font-size: 0.85rem;" onclick="app.handleLogout()" id="logout-btn">Tizimdan chiqish</button>
                 </div>
             </div>
         </nav>
@@ -50,7 +50,7 @@
         <main class="main-content">
             <!-- Topbar -->
             <header class="topbar">
-                <h1 id="page-title">Bosh sahifa</h1>
+                <h1 id="page-title">Asosiy panel</h1>
             </header>
 
             <!-- Dynamic Views -->
@@ -60,16 +60,16 @@
                     <div class="landing-container glass-panel" style="max-width: 800px; margin: 40px auto; padding: 40px; text-align: center; border-radius: 20px;">
                         <div class="landing-hero" style="margin-bottom: 40px;">
                             <img src="img/python-logo.svg" alt="Python Logo" style="height: 80px; width: 80px; margin-bottom: 20px; animation: lock-pulse 3s infinite ease-in-out;">
-                            <h2 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary); font-weight: 700; line-height: 1.3;">Python dasturlash tilini amaliy metodlar orqali o'zlashtirish</h2>
+                            <h2 style="font-size: 2rem; margin-bottom: 15px; color: var(--primary); font-weight: 700; line-height: 1.3;">Python Dasturlash Tilini Amaliy Metodologiyalar Vositasida Chuqurlashtirilgan O'rganish</h2>
                             <p style="font-size: 1rem; color: var(--text-muted); line-height: 1.7; max-width: 600px; margin: 0 auto 30px;">
-                                PyLearn — interaktiv topshiriqlar, sun'iy intellektga asoslangan o'quv assistenti va o'zlashtirish ko'rsatkichlarini rag'batlantiruvchi gamifikatsiya tizimi orqali dasturlashni tizimli o'rganish muhitidir.
+                                PyLearn — interaktiv amaliy topshiriqlar, sun'iy intellektga asoslangan o'quv assistenti va talabalar faolligini rag'batlantiruvchi gamifikatsiya tizimini o'z ichiga olgan raqamli ta'lim platformasidir.
                             </p>
                             <div class="landing-ctas" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
                                 <button class="btn-primary" style="padding: 12px 30px; font-size: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; border: none;" onclick="app.switchView('courses')">
-                                    <i class="fa-solid fa-graduation-cap"></i> Kurs dasturi
+                                    <i class="fa-solid fa-graduation-cap"></i> O'quv Dasturi
                                 </button>
                                 <button class="btn-outline" style="padding: 12px 30px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onclick="app.switchView('auth')" id="landing-auth-btn">
-                                    <i class="fa-solid fa-right-to-bracket"></i> Avtorizatsiyadan o'tish
+                                    <i class="fa-solid fa-right-to-bracket"></i> Tizimda Avtorizatsiyadan O'tish
                                 </button>
                             </div>
                         </div>
@@ -77,18 +77,18 @@
                         <div class="landing-features" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; border-top: 1px solid var(--border-glass); padding-top: 40px;">
                             <div class="feature-card" style="padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; text-align: left;">
                                 <i class="fa-solid fa-code" style="font-size: 1.5rem; color: var(--accent); margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">Interaktiv kodlash muhiti</h4>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Dasturiy kodni bevosita brauzerda tahrirlash va uning natijalarini real vaqt rejimida tahlil qilish.</p>
+                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">Interaktiv Laboratoriya</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Dasturiy kodlarni bevosita brauzer muhitida tahrirlash va natijalarni real vaqt rejimida avtomatlashtirilgan tahlil qilish.</p>
                             </div>
                             <div class="feature-card" style="padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; text-align: left;">
                                 <i class="fa-solid fa-robot" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">Sun'iy intellekt assistenti</h4>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Kodni tushuntirish, semantik xatolarni aniqlash va ilmiy tavsiyalar olish uchun neyron tarmoq tizimi.</p>
+                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">Neyro-Assistent Tizimi</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Dasturiy kod strukturasini izohlash, mantiqiy xatolarni aniqlash hamda ilmiy-metodik tavsiyalar berish.</p>
                             </div>
                             <div class="feature-card" style="padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 12px; text-align: left;">
                                 <i class="fa-solid fa-star" style="font-size: 1.5rem; color: #f59e0b; margin-bottom: 12px;"></i>
-                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">O'zlashtirish monitoringi</h4>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Amaliy topshiriqlarni bajarish orqali ballar to'plash, o'quv yutuqlarini qayd etish va o'zlashtirish reytingi.</p>
+                                <h4 style="margin: 0 0 8px; font-size: 1.05rem;">Akademik Monitoring</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Amaliy topshiriqlarni bajarish orqali reyting ballarini jamlash, shaxsiy yutuqlarni qayd etish va reytingni shakllantirish.</p>
                             </div>
                         </div>
                     </div>
@@ -100,32 +100,32 @@
                         <div class="glass-panel auth-box">
                             <div class="auth-header" style="text-align: center;">
                                 <img src="img/python-logo.svg" alt="Logo" style="height: 48px; margin-bottom: 15px;">
-                                <h2 id="auth-title">Tizimga kirish</h2>
-                                <p id="auth-subtitle" style="color: var(--text-muted); margin-bottom: 20px;">O'quv jarayonini davom ettirish uchun tizimda avtorizatsiyadan o'ting</p>
+                                <h2 id="auth-title">Tizimda avtorizatsiyadan o'tish</h2>
+                                <p id="auth-subtitle" style="color: var(--text-muted); margin-bottom: 20px;">O'quv jarayonini davom ettirish uchun shaxsiy profilingizga kiring</p>
                             </div>
                             
                             <form id="auth-form" onsubmit="event.preventDefault(); app.handleAuthSubmit();">
                                 <div class="form-group" id="group-email" style="display: none; margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Elektron pochta manzili</label>
-                                    <input type="email" id="auth-email" placeholder="Elektron pochta manzili" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Elektron pochta (Email)</label>
+                                    <input type="email" id="auth-email" placeholder="Elektron pochta manzilingiz" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
                                 </div>
                                 <div class="form-group" style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Foydalanuvchi nomi</label>
-                                    <input type="text" id="auth-username" required placeholder="Foydalanuvchi nomi" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Foydalanuvchi identifikatori (Username)</label>
+                                    <input type="text" id="auth-username" required placeholder="Foydalanuvchi identifikatori" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
                                 </div>
                                 <div class="form-group" style="margin-bottom: 20px;">
-                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Parol</label>
-                                    <input type="password" id="auth-password" required placeholder="Parol" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
+                                    <label style="display: block; margin-bottom: 5px; color: var(--text-muted);">Parol (Kafolatlangan kalit so'z)</label>
+                                    <input type="password" id="auth-password" required placeholder="Kafolatlangan kalit so'z" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.1); color: var(--text);">
                                 </div>
                                 
                                 <div id="auth-error" class="error-msg" style="display:none; color: #ef4444; margin-bottom: 15px; font-size: 0.9rem; text-align: center;"></div>
                                 
-                                <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;" id="auth-submit-btn">Kirish</button>
+                                <button type="submit" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;" id="auth-submit-btn">Tizimga kirish</button>
                             </form>
                             
                             <div class="auth-footer" style="margin-top: 20px; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
                                 <span id="auth-toggle-text">Tizimda shaxsiy hisobingiz mavjud emasmi?</span> 
-                                <a href="#" onclick="app.toggleAuthMode(); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;" id="auth-toggle-link">Ro'yxatdan o'tish</a>
+                                <a href="#" onclick="app.toggleAuthMode(); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;" id="auth-toggle-link">Ro'yxatdan o'tish (Hisob yaratish)</a>
                             </div>
                         </div>
                     </div>
@@ -134,21 +134,21 @@
                 <!-- Dashboard View -->
                 <section id="view-dashboard" class="view active">
                     <div class="dashboard-cards">
-                        <div class="stat-card glass-panel" title="Joriy darajangiz">
+                        <div class="stat-card glass-panel" title="Sizning joriy akademik darajangiz">
                             <div class="stat-info">
-                                <h3 id="dash-level-name">Yangi boshlovchi</h3>
-                                <p id="dash-level">1-daraja</p>
+                                <h3 id="dash-level-name">Boshlang'ich daraja</h3>
+                                <p id="dash-level">1-akademik bosqich</p>
                             </div>
                         </div>
                         <div class="stat-card glass-panel">
                             <div class="stat-info">
-                                <h3>Umumiy ballar</h3>
+                                <h3>Jamlangan reyting ballari</h3>
                                 <p id="dash-points">0 XP</p>
                             </div>
                         </div>
-                        <div class="stat-card glass-panel" title="Ketma-ket faollik kunlari">
+                        <div class="stat-card glass-panel" title="Tizimli faollik monitoringi (kun)">
                             <div class="stat-info">
-                                <h3>Faollik</h3>
+                                <h3>Tizimli faollik</h3>
                                 <p id="dash-streak">0 kun</p>
                             </div>
                         </div>
@@ -159,18 +159,18 @@
                         <!-- Activity Graph (GitHub Style) -->
                         <div class="glass-panel" style="display: flex; flex-direction: column; grid-column: 1 / -1;">
                             <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                                <h3><i class="fa-regular fa-calendar-check"></i> Faollik tarixi</h3>
+                                <h3><i class="fa-regular fa-calendar-check"></i> Muntazam faollik ko'rsatkichlari</h3>
                                 <div id="heatmap-year-selector" style="display:flex; gap:6px;"></div>
                             </div>
                             <div class="activity-graph-container" style="overflow-x: auto; padding: 10px 0;">
                                 <div class="heatmap-wrapper" style="display: inline-flex; gap: 6px;">
                                     <!-- Day labels on the left -->
                                     <div class="heatmap-day-labels" id="heatmap-day-labels" style="display:flex; flex-direction:column; justify-content:space-around; padding-top:22px; font-size:0.7rem; color:var(--text-muted); line-height:1;">
-                                        <span style="height:13px; line-height:13px;">Dush</span>
+                                        <span style="height:13px; line-height:13px;">Dush.</span>
                                         <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
-                                        <span style="height:13px; line-height:13px;">Chor</span>
+                                        <span style="height:13px; line-height:13px;">Chor.</span>
                                         <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
-                                        <span style="height:13px; line-height:13px;">Jum</span>
+                                        <span style="height:13px; line-height:13px;">Jum.</span>
                                         <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
                                         <span style="height:13px; line-height:13px; visibility:hidden;">.</span>
                                     </div>
@@ -179,7 +179,7 @@
                                         <div id="activity-months" style="position:relative; height:20px; margin-bottom:4px;"></div>
                                         <div id="activity-heatmap" class="contribution-graph"></div>
                                         <div class="graph-legend" style="margin-top: 10px; display: flex; justify-content: flex-end; align-items: center; gap: 5px; font-size: 0.8rem; color: var(--text-muted);">
-                                            Kam <div class="day-box level-0"></div><div class="day-box level-1"></div><div class="day-box level-2"></div><div class="day-box level-3"></div><div class="day-box level-4"></div> Ko'p
+                                            Kam faollik <div class="day-box level-0"></div><div class="day-box level-1"></div><div class="day-box level-2"></div><div class="day-box level-3"></div><div class="day-box level-4"></div> Yuqori faollik
                                         </div>
                                     </div>
                                 </div>
@@ -189,7 +189,7 @@
                         <!-- Course Mastery Chart -->
                         <div class="glass-panel" style="display: flex; flex-direction: column;">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-chart-pie"></i> Mavzularni o'zlashtirish darajasi</h3>
+                                <h3><i class="fa-solid fa-chart-pie"></i> Fan modullarini o'zlashtirish ko'rsatkichlari</h3>
                             </div>
                             <div style="position: relative; height: 250px; width: 100%;">
                                 <canvas id="mastery-chart"></canvas>
@@ -207,11 +207,11 @@
 
                 <!-- Lesson / Editor View -->
                 <section id="view-editor" class="view">
-                    <button class="btn-back" onclick="app.switchView('courses')"><i class="fa-solid fa-arrow-left"></i> Mavzular ro'yxatiga qaytish</button>
+                    <button class="btn-back" onclick="app.switchView('courses')"><i class="fa-solid fa-arrow-left"></i> O'quv dasturiga qaytish</button>
                     <div class="editor-layout">
                         <!-- Lesson Content -->
                         <div class="lesson-panel glass-panel">
-                            <h2 id="lesson-title">Mavzu yuklanmoqda...</h2>
+                            <h2 id="lesson-title">O'quv materiali yuklanmoqda...</h2>
                             <div id="lesson-content" class="content-text"></div>
                             
                             <div class="task-section">
@@ -221,18 +221,18 @@
                                 <h3><i class="fa-solid fa-code"></i> Amaliy topshiriq: <span id="task-title">...</span></h3>
                                 <p id="task-question" class="question-text"></p>
                                 <button class="btn-ai-toggle" id="btn-toggle-hints">
-                                    <i class="fa-solid fa-robot"></i> Sun'iy intellekt tavsiyalarini faollashtirish
+                                    <i class="fa-solid fa-robot"></i> Sun'iy intellekt ilmiy tavsiyasini ko'rsatish
                                 </button>
                                 <div id="ai-hints" class="hints-box hidden">
-                                    <i class="fa-solid fa-robot"></i> <strong>Sun'iy intellekt tavsiyasi:</strong> <span id="hint-text"></span>
+                                    <i class="fa-solid fa-robot"></i> <strong>Ilmiy-metodik tavsiya:</strong> <span id="hint-text"></span>
                                 </div>
                             </div>
                             
                             <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 30px 0;">
 
                             <div class="quiz-section mt-4" id="quiz-section" style="display: none;">
-                                <h3><i class="fa-solid fa-list-check"></i> Mavzu bo'yicha nazorat savollari</h3>
-                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">O'zlashtirilgan bilimlarni sinovdan o'tkazish va tegishli tajriba ballarini qo'lga kiritish.</p>
+                                <h3><i class="fa-solid fa-list-check"></i> Mavzuga oid nazorat va sinov testlari</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Nazariy bilimlaringizni sinovdan o'tkazing va reyting ballarini qo'lga kiriting.</p>
                                 <div id="quiz-container">
                                     <!-- Quizzes will be injected here -->
                                 </div>
@@ -245,23 +245,23 @@
                             <div class="editor-header">
                                 <span><i class="fa-brands fa-python"></i> main.py</span>
                                 <div class="editor-header-right">
-                                    <button class="btn-ai-panel-toggle" id="btn-toggle-ai-panel" title="Sun'iy intellekt asboblari">
-                                        <i class="fa-solid fa-robot"></i> AI
+                                    <button class="btn-ai-panel-toggle" id="btn-toggle-ai-panel" title="Sun'iy intellekt instrumentlari">
+                                        <i class="fa-solid fa-robot"></i> Assistent
                                     </button>
                                     <button id="submit-code-btn" class="btn-primary btn-sm"><i class="fa-solid fa-play"></i> Tekshirishga yuborish</button>
                                 </div>
                             </div>
                             <div class="ai-toolbar hidden" id="ai-toolbar">
-                                <button id="btn-explain" class="btn-ai" title="Kodni tushuntirib berish"><i class="fa-solid fa-wand-magic-sparkles"></i> Tushuntirish</button>
-                                <button id="btn-hint" class="btn-ai" title="Tavsiya olish"><i class="fa-solid fa-lightbulb"></i> Tavsiya</button>
-                                <button id="btn-analyze" class="btn-ai" title="Xatolikni tahlil qilish"><i class="fa-solid fa-bug"></i> Xatolikni tahlil qilish</button>
+                                <button id="btn-explain" class="btn-ai" title="Dasturiy kod strukturasini tahliliy izohlash"><i class="fa-solid fa-wand-magic-sparkles"></i> Izohlash</button>
+                                <button id="btn-hint" class="btn-ai" title="Yo'naltiruvchi metodik ko'rsatma olish"><i class="fa-solid fa-lightbulb"></i> Ko'rsatma</button>
+                                <button id="btn-analyze" class="btn-ai" title="Sintaktik va semantik xatolarni aniqlash"><i class="fa-solid fa-bug"></i> Xatolarni tahlil qilish</button>
                             </div>
                             <!-- CodeMirror Editor -->
                             <div id="code-editor-wrapper">
                                 <textarea id="code-editor" spellcheck="false"></textarea>
                             </div>
                             <div class="terminal-output" id="submission-result">
-                                Natija kutilmoqda...
+                                Dastur natijasi tahlili kutilmoqda...
                             </div>
                         </div>
                     </div>
@@ -270,15 +270,15 @@
                 <!-- Progress View -->
                 <section id="view-progress" class="view">
                     <div class="glass-panel">
-                        <h2>Amaliy topshiriqlar tarixi</h2>
+                        <h2>Bajarilgan amaliy topshiriqlar jurnali</h2>
                         <div class="table-responsive">
                             <table class="progress-table">
                                 <thead>
                                     <tr>
-                                        <th>Amaliy topshiriq</th>
-                                        <th>Holat</th>
-                                        <th>Ball</th>
-                                        <th>Sun'iy intellekt xulosasi</th>
+                                        <th>Amaliy topshiriq nomi</th>
+                                        <th>Tekshiruv holati</th>
+                                        <th>Olingan ball</th>
+                                        <th>Sun'iy intellekt tahliliy xulosasi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="progress-tbody">
@@ -293,18 +293,18 @@
                 <section id="view-leaderboard" class="view">
                     <div class="glass-panel">
                         <div class="view-header">
-                            <h2><i class="fa-solid fa-trophy" style="color: gold;"></i> Global reyting</h2>
-                            <p class="subtitle">Foydalanuvchilarning umumiy reytingdagi o'rni va o'zlashtirish ko'rsatkichlari.</p>
+                            <h2><i class="fa-solid fa-trophy" style="color: gold;"></i> Global reyting va akademik natijalar</h2>
+                            <p class="subtitle">Platforma talabalari orasidagi umumiy reyting ko'rsatkichlari jadvali.</p>
                         </div>
                         <div class="table-responsive">
                             <table class="progress-table leaderboard-table">
                                 <thead>
                                     <tr>
-                                        <th>O'rin</th>
-                                        <th>Foydalanuvchi</th>
-                                        <th>Daraja</th>
-                                        <th>Tajriba (XP)</th>
-                                        <th>Yutuqlar</th>
+                                        <th>Reyting o'rni</th>
+                                        <th>Talabaning taxallusi (F.I.Sh.)</th>
+                                        <th>Akademik bosqich</th>
+                                        <th>To'plangan umumiy ballar</th>
+                                        <th>Akademik yutuqlar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="leaderboard-tbody">
@@ -319,29 +319,29 @@
                 <section id="view-stats" class="view">
                     <div class="stats-container">
                         <div class="glass-panel stats-main">
-                            <h2><i class="fa-solid fa-chart-simple"></i> Batafsil statistika</h2>
+                            <h2><i class="fa-solid fa-chart-simple"></i> Akademik faoliyat tahlili va ko'rsatkichlari</h2>
                             <div class="stats-grid">
                                 <div class="stat-item">
-                                    <span class="label">Muvaffaqiyat ko'rsatkichi</span>
+                                    <span class="label">Topshiriqlarni muvaffaqiyatli bajarish darajasi</span>
                                     <span class="value" id="stat-accuracy">0%</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="label">Umumiy urinishlar soni</span>
+                                    <span class="label">Jami urinishlar soni</span>
                                     <span class="value" id="stat-total-sub">0</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="label">Muvaffaqiyatli bajarilgan topshiriqlar</span>
+                                    <span class="label">Muvaffaqiyatli yakunlangan topshiriqlar</span>
                                     <span class="value" id="stat-correct-sub">0</span>
                                 </div>
                                 <div class="stat-item">
-                                    <span class="label">O'zlashtirilgan darslar soni</span>
+                                    <span class="label">To'liq o'zlashtirilgan darslar soni</span>
                                     <span class="value" id="stat-finished-tasks">0</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="glass-panel badges-full-list">
-                            <h3><i class="fa-solid fa-medal"></i> Erishilgan ilmiy yutuqlar</h3>
+                            <h3><i class="fa-solid fa-medal"></i> Foydalanuvchining akademik mukofotlari</h3>
                             <div id="stats-badges-list" class="badges-grid-full">
                                 <!-- Yutuqlar shu yerga chiqadi -->
                             </div>
@@ -356,8 +356,8 @@
     <!-- Theme Selection Modal -->
     <div class="theme-modal-overlay" id="theme-modal">
         <div class="theme-modal">
-            <h3><i class="fa-solid fa-palette"></i> Tizim fonini sozlash</h3>
-            <p class="modal-subtitle">Tizim interfeysi uchun mos keladigan fon rangini tanlang</p>
+            <h3><i class="fa-solid fa-palette"></i> Tizim interfeysi fonini sozlash</h3>
+            <p class="modal-subtitle">O'quv jarayonining qulayligi uchun interfeys ranglar palitrasini sozlang</p>
             <div class="theme-grid">
                 <button class="theme-option active" data-theme-value="default">
                     <div class="theme-preview" style="background: linear-gradient(135deg, #0b0f19, #141c2b);"></div>
@@ -392,7 +392,7 @@
                     <span>⬜ Oq</span>
                 </button>
             </div>
-            <button class="theme-modal-close" id="theme-modal-close">Yopish</button>
+            <button class="theme-modal-close" id="theme-modal-close">Oynani yopish</button>
         </div>
     </div>
 

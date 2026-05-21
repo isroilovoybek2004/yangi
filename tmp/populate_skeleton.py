@@ -36,7 +36,7 @@ SKELETON_DATA = [
             #  DARS 7: LUG'ATLAR (DICTIONARY)
             # ═══════════════════════════════════
             {
-                "title": "7. Lug'atlar (dictionary) bilan ishlash",
+                "title": "7. Lug'atlar (Dictionary) bilan ishlash",
                 "lesson_type": "mixed",
                 "difficulty": "intermediate",
                 "estimated_minutes": 6,
@@ -207,7 +207,7 @@ h.tekshir()
 """,
                 "tasks": [
                     {
-                        "title": "Klass (class) yaratish",
+                        "title": "Class yaratish",
                         "question": "Mashina nomli class yarating. __init__ da 'nomi' va 'rangi' parametrlarini qabul qilsin. info() metodi 'Mashina: [nomi], Rangi: [rangi]' deb chop etsin. m = Mashina('Cobalt', 'oq') yaratib m.info() ni chaqiring.",
                         "starter_code": "class Mashina:\n    # __init__ va info() yozing\n    pass\n\nm = Mashina('Cobalt', 'oq')\nm.info()",
                         "expected_output": "Mashina: Cobalt, Rangi: oq",
@@ -320,7 +320,7 @@ print(hozir.month)  # Joriy oy
 """,
                 "tasks": [
                     {
-                        "title": "Math modulidan foydalanish",
+                        "title": "math modulidan foydalanish",
                         "question": "math modulini import qiling va math.sqrt(144) natijasini ekranga chiqaring.",
                         "starter_code": "# math ni import qiling\n# sqrt(144) ni chop eting",
                         "expected_output": "12.0",
@@ -328,7 +328,7 @@ print(hozir.month)  # Joriy oy
                         "difficulty": "intermediate",
                     },
                     {
-                        "title": "Faktorialni hisoblash",
+                        "title": "factorial hisoblash",
                         "question": "math modulidan factorial funksiyasini import qiling va factorial(6) natijasini chop eting. (6! = 720)",
                         "starter_code": "# from math import factorial\n# factorial(6) ni chop eting",
                         "expected_output": "720",
@@ -336,7 +336,7 @@ print(hozir.month)  # Joriy oy
                         "difficulty": "intermediate",
                     },
                     {
-                        "title": "Pi sonini chiqarish",
+                        "title": "pi sonini chiqarish",
                         "question": "math modulidan pi konstantasini import qilib, uni ekranga chiqaring.",
                         "starter_code": "# pi ni import qiling va chop eting",
                         "expected_output": "3.141592653589793",

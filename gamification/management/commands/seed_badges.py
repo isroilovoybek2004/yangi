@@ -39,13 +39,13 @@ BADGES_DATA = [
     },
     {
         'code': 'XP_100',
-        'name': '100 XP yig\'dingiz',
+        'name': '100 XP Yig\'dingiz',
         'description': "100 XP to'plash milestones'ini erishdingiz!",
         'icon': '💯',
     },
     {
         'code': 'XP_500',
-        'name': '500 XP yig\'dingiz',
+        'name': '500 XP Yig\'dingiz',
         'description': "500 XP to'plash milestones'ini erishdingiz!",
         'icon': '🌟',
     },

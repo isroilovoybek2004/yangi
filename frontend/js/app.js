@@ -133,11 +133,11 @@ const app = {
 
     toggleAuthMode() {
         this.isLoginMode = !this.isLoginMode;
-        document.getElementById('auth-title').innerText = this.isLoginMode ? 'Tizimga kirish' : "Ro'yxatdan o'tish";
-        document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "O'quv jarayonini davom ettirish uchun tizimda avtorizatsiyadan o'ting" : "Platformamizga xush kelibsiz";
-        document.getElementById('auth-submit-btn').innerText = this.isLoginMode ? 'Kirish' : "Ro'yxatdan o'tish";
+        document.getElementById('auth-title').innerText = this.isLoginMode ? "Tizimda avtorizatsiyadan o'tish" : "Ro'yxatdan o'tish (Hisob yaratish)";
+        document.getElementById('auth-subtitle').innerText = this.isLoginMode ? "O'quv jarayonini davom ettirish uchun shaxsiy profilingizga kiring" : "Platformaning barcha imkoniyatlaridan foydalanish uchun tizimda ro'yxatdan o'ting";
+        document.getElementById('auth-submit-btn').innerText = this.isLoginMode ? "Tizimga kirish" : "Ro'yxatdan o'tish";
         document.getElementById('auth-toggle-text').innerText = this.isLoginMode ? "Tizimda shaxsiy hisobingiz mavjud emasmi?" : "Tizimda shaxsiy hisobingiz mavjudmi?";
-        document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish" : 'Kirish';
+        document.getElementById('auth-toggle-link').innerText = this.isLoginMode ? "Ro'yxatdan o'tish (Hisob yaratish)" : "Tizimga kirish";
         document.getElementById('group-email').style.display = this.isLoginMode ? 'none' : 'block';
         document.getElementById('auth-error').style.display = 'none';
     },
@@ -150,18 +150,18 @@ const app = {
         const btn = document.getElementById('auth-submit-btn');
 
         if (!username || !password) {
-            errorDiv.innerText = "Maydonlarni to'ldiring";
+            errorDiv.innerText = "Iltimos, barcha majburiy maydonlarni to'ldiring.";
             errorDiv.style.display = 'block';
             return;
         }
 
         try {
             btn.disabled = true;
-            btn.innerText = "Kutib turing...";
+            btn.innerText = "Avtorizatsiya jarayoni bajarilmoqda...";
             if (this.isLoginMode) {
                 await api.login(username, password);
             } else {
-                if (!email) throw new Error("Email manzilni kiriting");
+                if (!email) throw new Error("Iltimos, elektron pochta (Email) manzilingizni kiriting.");
                 await api.register({ username, password, email });
                 await api.login(username, password); // Auto login
             }
@@ -178,7 +178,7 @@ const app = {
             errorDiv.style.display = 'block';
         } finally {
             btn.disabled = false;
-            btn.innerText = this.isLoginMode ? "Kirish" : "Ro'yxatdan o'tish";
+            btn.innerText = this.isLoginMode ? "Tizimga kirish" : "Ro'yxatdan o'tish";
         }
     },
 
@@ -216,11 +216,11 @@ const app = {
                     }
                 });
                 if (this.navUsername) {
-                    this.navUsername.innerText = 'Mehmon';
+                    this.navUsername.innerText = 'Tashrif buyuruvchi';
                 }
                 const logoutBtn = document.getElementById('logout-btn');
                 if (logoutBtn) {
-                    logoutBtn.innerText = 'Kirish';
+                    logoutBtn.innerText = 'Avtorizatsiyadan o\'tish';
                     logoutBtn.onclick = () => this.switchView('auth');
                 }
             } else {
@@ -233,7 +233,7 @@ const app = {
                 }
                 const logoutBtn = document.getElementById('logout-btn');
                 if (logoutBtn) {
-                    logoutBtn.innerText = 'Chiqish';
+                    logoutBtn.innerText = 'Tizimdan chiqish';
                     logoutBtn.onclick = () => this.handleLogout();
                 }
             }
@@ -257,13 +257,13 @@ const app = {
             
             // Set Titles
             const titles = {
-                'landing': 'Bosh sahifa',
-                'dashboard': 'Bosh sahifa',
-                'courses': 'Mavjud mavzular',
-                'progress': 'Mening vazifalarim',
-                'editor': 'Ish maydoni',
-                'leaderboard': 'Global reyting',
-                'stats': 'Batafsil statistika'
+                'landing': 'Tashrif sahifasi',
+                'dashboard': 'Asosiy panel',
+                'courses': 'O\'quv modullari',
+                'progress': 'O\'zlashtirish monitoringi',
+                'editor': 'Interaktiv laboratoriya',
+                'leaderboard': 'Akademik reyting',
+                'stats': 'Batafsil tahlil'
             };
             this.pageTitle.innerText = titles[viewName] || 'PyLearn Akademiyasi';
 
@@ -724,8 +724,8 @@ const app = {
                 lockOverlay.innerHTML = `
                     <i class="fa-solid fa-lock lock-icon"></i>
                     <h3>Amaliy topshiriq cheklangan</h3>
-                    <p>Dasturiy kodni ishga tushirish, natijalarni tahlil qilish hamda intellektual assistent yordamidan foydalanish uchun tizimda avtorizatsiyadan o'ting.</p>
-                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 8px;" onclick="app.switchView('auth')">Tizimga kirish</button>
+                    <p>Dasturiy kodni ishga tushirish, natijalarni tahlil qilish hamda intellektual assistent ilmiy tavsiyalaridan foydalanish uchun tizimda avtorizatsiyadan o'tishingiz talab etiladi.</p>
+                    <button class="btn-primary" style="padding: 10px 24px; font-size: 0.95rem; border-radius: 8px;" onclick="app.switchView('auth')">Avtorizatsiyadan o'tish</button>
                 `;
                 codingPanel.appendChild(lockOverlay);
 
@@ -830,8 +830,8 @@ const app = {
                 }
             }, 300);
         } else {
-            this.taskTitle.innerText = "Amaliy topshiriqlar mavjud emas";
-            this.taskQuestion.innerText = "Ushbu mavzu bo'yicha hozircha amaliy topshiriqlar yuklanmagan.";
+            this.taskTitle.innerText = "Vazifalar yo'q";
+            this.taskQuestion.innerText = "Ushbu dars uchun hozircha vazifalar mavjud emas.";
             this.currentTask = null;
             hintsBox.classList.add('hidden');
         }
@@ -897,11 +897,11 @@ const app = {
                             feedbackEl.style.color = 'orange';
                         } else if (selected.value === 'true') {
                             score++;
-                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> To'g'ri! ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
+                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Muvaffaqiyatli! Natija to'g'ri qayd etildi. ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
                             feedbackEl.style.background = 'rgba(74,222,128,0.1)';
                             feedbackEl.style.color = '#4ade80';
                         } else {
-                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Noto'g'ri. ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
+                            feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Noto'g'ri. Javobingizni tahlil qilib qayta urinib ko'ring. ${q.explanation ? '<br><small>'+q.explanation+'</small>' : ''}`;
                             feedbackEl.style.background = 'rgba(248,113,113,0.1)';
                             feedbackEl.style.color = '#f87171';
                         }
@@ -910,27 +910,27 @@ const app = {
                     if (score === quiz.questions.length && score > 0) {
                         const token = localStorage.getItem('access_token');
                         if (!token) {
-                            alert(`Muqobil test savollariga muvaffaqiyatli javob berildi. Ballarni (XP) va o'zlashtirish ko'rsatkichlarini rasmiylashtirish uchun tizimda avtorizatsiyadan o'tishingiz so'raladi.`);
+                            alert(`Nazorat test topshiriqlariga muvaffaqiyatli javob berildi. Jamlangan reyting ballarini (XP) va o'zlashtirish ko'rsatkichlarini hisobga olish uchun tizimda avtorizatsiyadan o'tishingiz talab etiladi.`);
                             this.switchView('auth');
                             return;
                         }
                         // XP berish API ga so'rov
                         try {
                             const xpRes = await api.quizXP();
-                            let msg = `🎉 Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!\n+${xpRes.xp_earned || 5} XP qo'shildi!`;
+                            let msg = `Tabriklaymiz! Barcha ${score} ta nazorat savoliga muvaffaqiyatli javob berdingiz!\nReytingingizga +${xpRes.xp_earned || 5} ball (XP) qo'shildi.`;
                             if (xpRes.new_badges && xpRes.new_badges.length > 0) {
-                                msg += `\n🏅 Yangi yutuq: ${xpRes.new_badges.join(', ')}`;
+                                msg += `\nAkademik yutuq: ${xpRes.new_badges.join(', ')}`;
                             }
                             alert(msg);
                             this.loadDashboard();
                         } catch(e) {
-                            alert(`Tabriklaymiz! Barcha ${score} ta savolga to'g'ri javob berdingiz!`);
+                            alert(`Tabriklaymiz! Barcha ${score} ta savolga muvaffaqiyatli javob berdingiz!`);
                         }
                         // Tugmani o'chirish (qayta bosmasligi uchun)
                         btn.disabled = true;
-                        btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Yakunlandi';
+                        btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Muvaffaqiyatli yakunlandi';
                     } else {
-                        alert(`Natija: ${quiz.questions.length} tadan ${score} tasi to'g'ri. Qayta urinib ko'ring!`);
+                        alert(`Natija: ${quiz.questions.length} ta savoldan ${score} tasiga to'g'ri javob berildi. Bilimlaringizni mustahkamlash uchun qayta urinib ko'ring.`);
                     }
                 };
                 quizDiv.appendChild(btn);
@@ -990,13 +990,13 @@ const app = {
             this.switchView('auth');
             return;
         }
-        if (!this.currentTask) return alert("Iltimos, avval mavzuni tanlang.");
+        if (!this.currentTask) return alert("Amaliy topshiriqni boshlash uchun avval dars (mavzu) ni tanlang.");
         
         const code = this.cmEditor.getValue();
-        if (!code.trim()) return alert("Iltimos, dastur kodini kiriting.");
+        if (!code.trim()) return alert("Amaliy topshiriqni tekshirish uchun dasturiy kodni kiriting.");
         
         this.submissionResult.className = 'terminal-output';
-        this.submissionResult.innerHTML = 'Mantiq tekshirilmoqda... <i class="fa-solid fa-spinner fa-spin"></i>';
+        this.submissionResult.innerHTML = 'Dasturiy kod strukturasi va mantiqiy to\'g\'riligi tekshirilmoqda... <i class="fa-solid fa-spinner fa-spin"></i>';
         
         try {
             const res = await api.submitCode(this.currentTask.id, code);
@@ -1004,20 +1004,20 @@ const app = {
             if (res.is_correct) {
                 let badgeMsg = "";
                 if (res.new_badges && res.new_badges.length > 0) {
-                    badgeMsg = `<br><br><span style="color:#f59e0b"><i class="fa-solid fa-medal"></i> YANGI YUTUQ: ${res.new_badges.join(', ')}!</span>`;
+                    badgeMsg = `<br><br><span style="color:#f59e0b"><i class="fa-solid fa-medal"></i> AKADEMIK YUTUQ QAYD ETILDI: ${res.new_badges.join(', ')}!</span>`;
                 }
                 const feedbackHtml = (res.ai_feedback || '').replace(/\n/g, '<br>');
-                this.submissionResult.innerHTML = `<span style="color:#4ade80"><i class="fa-solid fa-circle-check"></i> Muvaffaqiyatli! Kod to'g'ri ishladi.</span><br><span style="color:var(--primary)">+${res.xp_earned} XP to'plandi</span>${badgeMsg}<br><br><strong>Natija:</strong><br><code style="font-family:monospace;white-space:pre-wrap">${feedbackHtml}</code>`;
+                this.submissionResult.innerHTML = `<span style="color:#4ade80"><i class="fa-solid fa-circle-check"></i> Muvaffaqiyatli! Kod to'g'ri ishladi.</span><br><span style="color:var(--primary)">Reyting ko'rsatkichi +${res.xp_earned} ball (XP) ga oshdi.</span>${badgeMsg}<br><br><strong>Natija:</strong><br><code style="font-family:monospace;white-space:pre-wrap">${feedbackHtml}</code>`;
                 // Dashboard ni yangilash
                 this.loadDashboard();
             } else {
                 this.submissionResult.className = 'terminal-output error';
                 const errHtml = (res.ai_feedback || 'Sintaktik xato.').replace(/\n/g, '<br>');
-                this.submissionResult.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Xato.<br><br>${errHtml}`;
+                this.submissionResult.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Topshiriqni bajarishda xatolikka yo'l qo'yildi. Sintaktik va mantiqiy jihatlarni qayta ko'rib chiqing.<br><br>${errHtml}`;
             }
         } catch(e) {
             this.submissionResult.className = 'terminal-output error';
-            this.submissionResult.innerHTML = 'Tizim serveri bilan bog\'lanishda xatolik yuz berdi.';
+            this.submissionResult.innerHTML = 'Server tizimi bilan aloqa o\'rnatishda xatolik yuz berdi. Aloqani tekshiring.';
         }
     },
 
@@ -1028,11 +1028,11 @@ const app = {
             this.switchView('auth');
             return;
         }
-        if (!this.currentTask) return alert("Iltimos, avval amaliy topshiriqni tanlang.");
+        if (!this.currentTask) return alert("Tahlil o'tkazish uchun avval tegishli amaliy topshiriqni tanlang.");
         const code = this.cmEditor.getValue();
 
         if (type === 'explain') {
-            if (!code.trim()) return alert("Iltimos, tushuntirish uchun dastur kodini kiriting.");
+            if (!code.trim()) return alert("Sun'iy intellekt tahlili uchun avval interaktiv oynaga dasturiy kod matnini kiriting.");
         }
 
         let payload = { code: code, task_question: this.currentTask.question };
@@ -1040,9 +1040,9 @@ const app = {
         if (type === 'analyze') {
             const terminalText = this.submissionResult.innerText.trim();
             // Terminal bo'sh yoki faqat "Kutilmoqda" matni bo'lsa bloklash
-            const isIdle = !terminalText || terminalText === 'Kutilmoqda...' || terminalText === 'Natija kutilmoqda...';
+            const isIdle = !terminalText || terminalText === 'Kutilmoqda...' || terminalText === 'Natijani kutilmoqda...';
             if (isIdle) {
-                return alert("Xatolikni tahlil qilish uchun avval topshiriq kodini tekshirishga yuboring.");
+                return alert("Kompilyatsiya va mantiqiy xatolarni tahlil qilish uchun avval topshiriqni tekshiruvga yuboring.");
             }
             payload.error_message = terminalText;
         }
@@ -1244,7 +1244,7 @@ window.onload = () => {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            alert("Siz hozir ochiq demo rejimidasiz. Tizim avtomatik ravishda mehmon akkauntiga ulangan, shuning uchun profildan chiqish hozircha o'chirib qo'yilgan.");
+            alert("Siz hozir ochiq taqdimot (demo) rejimidan foydalanmoqdasiz. Tizim avtomatik tarzda mehmon (tashrif buyuruvchi) hisobiga ulangan, shuning uchun profildan chiqish funksiyasi cheklangan.");
         });
     }
 };

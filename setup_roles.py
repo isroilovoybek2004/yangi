@@ -42,16 +42,16 @@ def setup_roles():
             
     print("'Ustozlar' guruhi va huquqlari sozlandi.")
 
-    # 4. testuser ni faqat ustoz qilish
-    teacher_user, created = User.objects.get_or_create(username='testuser')
-    teacher_user.set_password('password123')
+    # 4. ustoz ni haqiqiy ustoz qilish
+    teacher_user, created = User.objects.get_or_create(username='ustoz')
+    teacher_user.set_password('ustoz123')
     teacher_user.is_staff = True       # Admin panelga kirishi uchun
     teacher_user.is_superuser = False  # Superuser ekanligini olib tashlaymiz
     teacher_user.save()
     
     # Uni Ustozlar guruhiga qo'shamiz
     teacher_user.groups.add(teacher_group)
-    print("'testuser' haqiqiy ustoz rolida (faqat o'quv jarayonini boshqaradi).")
+    print("'ustoz' haqiqiy ustoz rolida (faqat o'quv jarayonini boshqaradi).")
 
 if __name__ == '__main__':
     setup_roles()

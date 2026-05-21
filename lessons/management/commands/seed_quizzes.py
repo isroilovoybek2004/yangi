@@ -491,7 +491,7 @@ QUIZZES_DATA = {
 
     # ── Dars 8: OOP ─────────────────────────────────────────────
     "8. Python da OOP ga kirish": {
-        "quiz_title": "Ob'yektga yo'naltirilgan dasturlash (OOP) — nazariy test",
+        "quiz_title": "Ob'yektga Yo'naltirilgan Dasturlash (OOP) — nazariy test",
         "questions": [
             {
                 "question_text": "Python da klass (class) qanday e'lon qilinadi?",
