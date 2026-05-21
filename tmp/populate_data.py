@@ -66,13 +66,10 @@ def populate():
     lessons_data = [
         {
             "title": "1. Kirish va Python haqida tushuncha",
-            "video_url": "https://www.youtube.com/embed/Z1Yd7upQsXY?si=tM3Hk6O1eT4Z-t2v",
+            "video_url": "",
             "content": """
             <h2>Python nimaga kerak?</h2>
             
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/Z1Yd7upQsXY?si=tM3Hk6O1eT4Z-t2v" title="Python tili imkoniyatlari" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            </div>
 
             <p><strong>Python</strong> — dunyodagi eng mashhur, o'rganish uchun sodda va shu bilan birga juda qudratli dasturlash tillaridan biri hisoblanadi. Uning sintaksisi (yozilish qoidalari) inson tiliga juda yaqin bo'lib, o'qish va tushunishni osonlashtiradi.</p>
             
