@@ -20,7 +20,8 @@ def setup_roles():
 
     # 1. Admin yaratish
     admin_user, created = User.objects.get_or_create(username='admin')
-    admin_user.set_password('admin123')
+    if created or not admin_user.check_password('admin123'):
+        admin_user.set_password('admin123')
     admin_user.is_staff = True
     admin_user.is_superuser = True
     admin_user.save()
@@ -44,7 +45,8 @@ def setup_roles():
 
     # 4. ustoz ni haqiqiy ustoz qilish
     teacher_user, created = User.objects.get_or_create(username='ustoz')
-    teacher_user.set_password('ustoz123')
+    if created or not teacher_user.check_password('ustoz123'):
+        teacher_user.set_password('ustoz123')
     teacher_user.is_staff = True       # Admin panelga kirishi uchun
     teacher_user.is_superuser = False  # Superuser ekanligini olib tashlaymiz
     teacher_user.save()

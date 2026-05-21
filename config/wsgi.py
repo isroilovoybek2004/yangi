@@ -32,7 +32,7 @@ try:
     # Check if database is empty to run seeders
     from courses.models import Course
     from lessons.models import Lesson
-    if not Course.objects.exists() or Lesson.objects.count() != 10 or Lesson.objects.filter(video_url="").exists() or Lesson.objects.filter(video_url__isnull=True).exists() or Lesson.objects.filter(video_url__contains="5-0yU0aW1Xg").exists() or Lesson.objects.filter(video_url__contains="L58W50k2zNo").exists():
+    if not Course.objects.exists():
         from tmp.populate_data import populate as pop_data
         from tmp.populate_skeleton import populate as pop_skeleton
         
