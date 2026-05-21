@@ -39,7 +39,7 @@ try:
         pop_data()
         pop_skeleton()
         try:
-            call_command("seed_quizzes", force=True, interactive=False)
+            call_command("seed_quizzes", force=True)
         except Exception as ex:
             print("Quiz seeding failed:", ex)
         try:
@@ -57,7 +57,7 @@ try:
         from lessons.models import Lesson, Quiz
         if Lesson.objects.exists() and Quiz.objects.count() < Lesson.objects.count():
             print("Missing quizzes detected. Auto seeding quizzes...")
-            call_command("seed_quizzes", force=True, interactive=False)
+            call_command("seed_quizzes", force=True)
     except Exception as qe:
         print("Auto seeding missing quizzes failed:", qe)
 except Exception as e:
