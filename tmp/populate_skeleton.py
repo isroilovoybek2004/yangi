@@ -428,6 +428,22 @@ finally:
                         "expected_output": "Xato yuz berdi",
                         "ai_hints": "try ichida 10 / 0 ni hisoblang, except ichida esa print('Xato yuz berdi') ni yozing.",
                         "difficulty": "intermediate",
+                    },
+                    {
+                        "title": "ValueError xatosini ushlash",
+                        "question": "Berilgan `matn = 'besh'` o'zgaruvchisini `int(matn)` orqali butun songa aylantirishga harakat qiling. Agar `ValueError` yuz bersa, ekranga 'Butun son emas' yozuvini chiqaring.",
+                        "starter_code": "matn = \"besh\"\ntry:\n    # bu yerga kod yozing\nexcept ValueError:\n    # bu yerga kod yozing",
+                        "expected_output": "Butun son emas",
+                        "ai_hints": "try ichida int(matn) funksiyasini chaqiring, except ValueError: bloki ostida esa print('Butun son emas') yozing.",
+                        "difficulty": "intermediate",
+                    },
+                    {
+                        "title": "IndexError xatosini ushlash",
+                        "question": "Berilgan `sonlar = [10, 20]` ro'yxatidan 5-indeksdagi elementni chiqarishga harakat qiling (ya'ni `sonlar[5]`). Agar `IndexError` yuz bersa, ekranga 'Indeks xato' yozuvini chiqaring.",
+                        "starter_code": "sonlar = [10, 20]\ntry:\n    # bu yerga kod yozing\nexcept IndexError:\n    # bu yerga kod yozing",
+                        "expected_output": "Indeks xato",
+                        "ai_hints": "try ichida sonlar[5] elementini olishga harakat qiling, except IndexError: bloki ostida print('Indeks xato') deb yozing.",
+                        "difficulty": "intermediate",
                     }
                 ],
                 "quizzes": []

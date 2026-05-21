@@ -60,5 +60,16 @@ try:
             call_command("seed_quizzes", force=True)
     except Exception as qe:
         print("Auto seeding missing quizzes failed:", qe)
+
+    # Seed missing tasks for Lesson 10 if they are missing
+    try:
+        from lessons.models import Lesson, Task
+        lesson10 = Lesson.objects.filter(title__icontains="10.").first() or Lesson.objects.filter(order=10).first()
+        if lesson10 and Task.objects.filter(lesson=lesson10).count() < 3:
+            print("Missing Lesson 10 tasks detected. Auto seeding tasks...")
+            from seed_tasks import seed_missing_tasks
+            seed_missing_tasks()
+    except Exception as te:
+        print("Auto seeding missing tasks failed:", te)
 except Exception as e:
     print("Auto-migrate or seed failed:", e)
